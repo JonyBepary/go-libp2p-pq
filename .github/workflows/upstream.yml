@@ -13,15 +13,15 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - 'ubuntu'
+          - "ubuntu"
         go:
           # - '1.15.x'
-          - '1.16.x'
+          - "1.16.x"
         upstream:
           # - 'libp2p/go-libp2p-pubsub' flaky
           # - 'ipfs/go-bitswap' flaky
           # - 'libp2p/go-libp2p-kad-dht'
-          - 'libp2p/go-libp2p-daemon'
+          - "libp2p/go-libp2p-daemon"
     runs-on: ${{ matrix.os }}-latest
     name: ${{ matrix.upstream }} unit tests (${{ matrix.os }}, Go ${{ matrix.go }})
     steps:
@@ -34,7 +34,7 @@ jobs:
           go env
       - uses: actions/checkout@v2
         with:
-          path: 'libp2p'
+          path: "libp2p"
       - uses: actions/checkout@v2
         with:
           repository: ${{ matrix.upstream }}
@@ -42,7 +42,7 @@ jobs:
       - name: Patch in new go-libp2p
         working-directory: upstream
         run: |
-          go mod edit -replace "github.com/libp2p/go-libp2p=../libp2p"
+          go mod edit -replace "github.com/JonyBepary/go-libp2p-pq=../libp2p"
           go mod tidy
       - name: Run tests
         working-directory: upstream

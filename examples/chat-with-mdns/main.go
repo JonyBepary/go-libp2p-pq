@@ -9,9 +9,9 @@ import (
 	"os"
 
 	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
+	"github.com/theQRL/go-libp2p-qrl/crypto"
 
 	"github.com/multiformats/go-multiaddr"
 )
@@ -89,7 +89,7 @@ func main() {
 	r := rand.Reader
 
 	// Creates a new RSA key pair for this host.
-	prvKey, _, err := crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, r)
+	prvKey, _, err := crypto.GenerateDilithiumKey(r)
 	if err != nil {
 		panic(err)
 	}

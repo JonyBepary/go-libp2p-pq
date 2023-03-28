@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/libp2p/go-libp2p/core/crypto/pb"
+	"github.com/JonyBepary/go-libp2p-pq/core/crypto/pb"
 
 	"google.golang.org/protobuf/proto"
 )

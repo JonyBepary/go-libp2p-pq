@@ -1,8 +1,8 @@
 package network
 
 import (
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/core/protocol"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/protocol"
 	"github.com/multiformats/go-multiaddr"
 )
 

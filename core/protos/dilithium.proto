@@ -1,0 +1,18 @@
+// Distributed under the MIT software license, see the accompanying
+// file LICENSE or http://www.opensource.org/licenses/mit-license.php.
+
+syntax = "proto3";
+
+option go_package = "github.com/theQRL/go-libp2p-qrl/protos";
+
+package protos;
+
+message DilithiumKeys {
+    bytes sk = 1;
+    bytes pk = 2;
+    bytes seed = 3;
+}
+
+message DilithiumPublicKey {
+    bytes pk = 1;
+}

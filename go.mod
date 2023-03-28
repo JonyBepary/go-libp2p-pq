@@ -1,13 +1,15 @@
-module github.com/libp2p/go-libp2p
+module github.com/JonyBepary/go-libp2p-pq
 
 go 1.19
 
 require (
 	github.com/benbjohnson/clock v1.3.0
+	github.com/cloudflare/circl v1.3.2
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0
 	github.com/flynn/noise v1.0.0
 	github.com/golang/mock v1.6.0
+	github.com/golang/protobuf v1.5.2
 	github.com/google/gopacket v1.1.19
 	github.com/hashicorp/golang-lru/v2 v2.0.1
 	github.com/ipfs/go-cid v0.3.2
@@ -19,8 +21,9 @@ require (
 	github.com/klauspost/compress v1.15.12
 	github.com/libp2p/go-buffer-pool v0.1.0
 	github.com/libp2p/go-flow-metrics v0.1.0
-	github.com/libp2p/go-libp2p-asn-util v0.3.0
-	github.com/libp2p/go-libp2p-testing v0.12.0
+	github.com/JonyBepary/go-libp2p-pq-asn-util v0.3.0
+	github.com/JonyBepary/go-libp2p-pq-core v0.20.1
+	github.com/JonyBepary/go-libp2p-pq-testing v0.12.0
 	github.com/libp2p/go-mplex v0.7.0
 	github.com/libp2p/go-msgio v0.3.0
 	github.com/libp2p/go-nat v0.1.0
@@ -47,6 +50,8 @@ require (
 	github.com/quic-go/webtransport-go v0.5.2
 	github.com/raulk/go-watchdog v1.3.0
 	github.com/stretchr/testify v1.8.1
+	github.com/theQRL/go-libp2p-qrl v0.0.0-20220905140727-a440bc5ac394
+	github.com/theQRL/go-qrllib v0.0.0-20230323144512-000d3b4a2208
 	go.uber.org/fx v1.18.2
 	go.uber.org/goleak v1.1.12
 	golang.org/x/crypto v0.4.0
@@ -75,7 +80,6 @@ require (
 	github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/google/pprof v0.0.0-20221203041831-ce31453925ec // indirect
 	github.com/google/uuid v1.3.0 // indirect

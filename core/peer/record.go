@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/libp2p/go-libp2p/core/internal/catch"
-	"github.com/libp2p/go-libp2p/core/peer/pb"
-	"github.com/libp2p/go-libp2p/core/record"
+	"github.com/JonyBepary/go-libp2p-pq/core/internal/catch"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer/pb"
+	"github.com/JonyBepary/go-libp2p-pq/core/record"
 
 	ma "github.com/multiformats/go-multiaddr"
 
