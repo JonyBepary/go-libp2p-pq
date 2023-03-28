@@ -21,7 +21,7 @@ require (
 	github.com/klauspost/compress v1.15.12
 	github.com/libp2p/go-buffer-pool v0.1.0
 	github.com/libp2p/go-flow-metrics v0.1.0
-	github.com/JonyBepary/go-libp2p-pq-asn-util v0.3.0
+	github.com/libp2p/go-libp2p-asn-util v0.3.0
 	github.com/JonyBepary/go-libp2p-pq-core v0.20.1
 	github.com/JonyBepary/go-libp2p-pq-testing v0.12.0
 	github.com/libp2p/go-mplex v0.7.0
