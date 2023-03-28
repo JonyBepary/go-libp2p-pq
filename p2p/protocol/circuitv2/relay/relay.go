@@ -17,9 +17,9 @@ import (
 	"github.com/JonyBepary/go-libp2p-pq/p2p/protocol/circuitv2/proto"
 	"github.com/JonyBepary/go-libp2p-pq/p2p/protocol/circuitv2/util"
 
-	asnutil "github.com/JonyBepary/go-libp2p-pq-asn-util"
 	logging "github.com/ipfs/go-log/v2"
 	pool "github.com/libp2p/go-buffer-pool"
+	asnutil "github.com/libp2p/go-libp2p-asn-util"
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr/net"
 )
