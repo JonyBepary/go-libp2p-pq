@@ -51,7 +51,7 @@ require (
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
 	github.com/libp2p/go-libp2p-asn-util v0.2.0 // indirect
-	github.com/JonyBepary/go-libp2p-pq-core v0.7.0 // indirect
+	github.com/JonyBepary/go-libp2p-pq/core v0.7.0 // indirect
 	github.com/JonyBepary/go-libp2p-pq-kbucket v0.5.0 // indirect
 	github.com/JonyBepary/go-libp2p-pq-record v0.2.0 // indirect
 	github.com/libp2p/go-msgio v0.3.0 // indirect

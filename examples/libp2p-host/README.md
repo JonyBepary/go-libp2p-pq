@@ -12,7 +12,7 @@ import (
 	"fmt"
 
 	"github.com/JonyBepary/go-libp2p-pq"
-	"github.com/JonyBepary/go-libp2p-pq-core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq/core/crypto"
 )
 
 // To construct a simple host with all the default settings, just use `New`

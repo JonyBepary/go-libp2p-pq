@@ -383,8 +383,8 @@ github.com/JonyBepary/go-libp2p-pq v0.26.4 h1:VA9ChjN0n1BwwfU/dqx4Zj9ezXtIxGk8Fy
 github.com/JonyBepary/go-libp2p-pq v0.26.4/go.mod h1:x75BN32YbwuY0Awm2Uix4d4KOz+/4piInkp4Wr3yOo8=
 github.com/libp2p/go-libp2p-asn-util v0.2.0 h1:rg3+Os8jbnO5DxkC7K/Utdi+DkY3q/d1/1q+8WeNAsw=
 github.com/libp2p/go-libp2p-asn-util v0.2.0/go.mod h1:WoaWxbHKBymSN41hWSq/lGKJEca7TNm58+gGJi2WsLI=
-github.com/JonyBepary/go-libp2p-pq-core v0.7.0 h1:4a0TMjrWNTZlNvcqxZmrMRDi/NQWrhwO2pkTuLSQ/IQ=
-github.com/JonyBepary/go-libp2p-pq-core v0.7.0/go.mod h1:FfewUH/YpvWbEB+ZY9AQRQ4TAD8sJBt/G1rVvhz5XT8=
+github.com/JonyBepary/go-libp2p-pq/core v0.7.0 h1:4a0TMjrWNTZlNvcqxZmrMRDi/NQWrhwO2pkTuLSQ/IQ=
+github.com/JonyBepary/go-libp2p-pq/core v0.7.0/go.mod h1:FfewUH/YpvWbEB+ZY9AQRQ4TAD8sJBt/G1rVvhz5XT8=
 github.com/JonyBepary/go-libp2p-pq-kad-dht v0.20.1-0.20230209220319-6c2045abad23 h1:VGjUg3I0gLugtjZKI4kzvPiptmfYhWHK6YGBI4ZI2Cs=
 github.com/JonyBepary/go-libp2p-pq-kad-dht v0.20.1-0.20230209220319-6c2045abad23/go.mod h1:ScWrKlutIaRETyELjPNXUO2TekuzLsE5nCBVuNR9l0g=
 github.com/JonyBepary/go-libp2p-pq-kbucket v0.5.0 h1:g/7tVm8ACHDxH29BGrpsQlnNeu+6OF1A9bno/4/U1oA=
