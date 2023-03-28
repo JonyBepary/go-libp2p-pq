@@ -23,7 +23,7 @@ require (
 	github.com/libp2p/go-flow-metrics v0.1.0
 	github.com/libp2p/go-libp2p-asn-util v0.3.0
 	github.com/JonyBepary/go-libp2p-pq-core v0.20.1
-	github.com/JonyBepary/go-libp2p-pq-testing v0.12.0
+	github.com/libp2p/go-libp2p-testing v0.12.0
 	github.com/libp2p/go-mplex v0.7.0
 	github.com/libp2p/go-msgio v0.3.0
 	github.com/libp2p/go-nat v0.1.0

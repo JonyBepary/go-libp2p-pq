@@ -16,9 +16,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/JonyBepary/go-libp2p-pq-testing/ci"
 	"github.com/JonyBepary/go-libp2p-pq/core/network"
 	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/libp2p/go-libp2p-testing/ci"
 
 	"github.com/stretchr/testify/require"
 )

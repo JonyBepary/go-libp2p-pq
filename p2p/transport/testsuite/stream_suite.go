@@ -15,10 +15,10 @@ import (
 	crand "crypto/rand"
 	mrand "math/rand"
 
-	"github.com/JonyBepary/go-libp2p-pq-testing/race"
 	"github.com/JonyBepary/go-libp2p-pq/core/network"
 	"github.com/JonyBepary/go-libp2p-pq/core/peer"
 	"github.com/JonyBepary/go-libp2p-pq/core/transport"
+	"github.com/libp2p/go-libp2p-testing/race"
 
 	ma "github.com/multiformats/go-multiaddr"
 )

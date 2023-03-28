@@ -1,8 +1,8 @@
 package crypto
 
 import (
-	"github.com/JonyBepary/go-libp2p-pq-core/crypto"
-	pb "github.com/JonyBepary/go-libp2p-pq-core/crypto/pb"
+	"github.com/JonyBepary/go-libp2p-pq/core/crypto"
+	pb "github.com/JonyBepary/go-libp2p-pq/core/crypto/pb"
 )
 
 const (

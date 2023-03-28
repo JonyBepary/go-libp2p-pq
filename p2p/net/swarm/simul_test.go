@@ -12,7 +12,7 @@ import (
 	. "github.com/JonyBepary/go-libp2p-pq/p2p/net/swarm"
 	swarmt "github.com/JonyBepary/go-libp2p-pq/p2p/net/swarm/testing"
 
-	"github.com/JonyBepary/go-libp2p-pq-testing/ci"
+	"github.com/libp2p/go-libp2p-testing/ci"
 	ma "github.com/multiformats/go-multiaddr"
 )
 

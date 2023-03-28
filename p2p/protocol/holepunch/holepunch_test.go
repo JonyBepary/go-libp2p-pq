@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/JonyBepary/go-libp2p-pq"
-	"github.com/JonyBepary/go-libp2p-pq-testing/race"
 	"github.com/JonyBepary/go-libp2p-pq/core/host"
 	"github.com/JonyBepary/go-libp2p-pq/core/network"
 	"github.com/JonyBepary/go-libp2p-pq/core/peer"
@@ -19,6 +18,7 @@ import (
 	holepunch_pb "github.com/JonyBepary/go-libp2p-pq/p2p/protocol/holepunch/pb"
 	"github.com/JonyBepary/go-libp2p-pq/p2p/protocol/identify"
 	"github.com/JonyBepary/go-libp2p-pq/p2p/transport/tcp"
+	"github.com/libp2p/go-libp2p-testing/race"
 
 	"github.com/libp2p/go-msgio/pbio"
 	ma "github.com/multiformats/go-multiaddr"
