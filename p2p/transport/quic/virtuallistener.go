@@ -4,8 +4,8 @@ import (
 	"errors"
 	"sync"
 
-	tpt "github.com/libp2p/go-libp2p/core/transport"
-	"github.com/libp2p/go-libp2p/p2p/transport/quicreuse"
+	tpt "github.com/JonyBepary/go-libp2p-pq/core/transport"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/transport/quicreuse"
 
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/quic-go/quic-go"

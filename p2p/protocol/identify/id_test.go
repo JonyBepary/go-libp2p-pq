@@ -8,25 +8,25 @@ import (
 	"testing"
 	"time"
 
-	"github.com/libp2p/go-libp2p"
-	ic "github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/event"
-	"github.com/libp2p/go-libp2p/core/host"
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/core/peerstore"
-	"github.com/libp2p/go-libp2p/core/protocol"
-	"github.com/libp2p/go-libp2p/core/record"
-	coretest "github.com/libp2p/go-libp2p/core/test"
-	basichost "github.com/libp2p/go-libp2p/p2p/host/basic"
-	blhost "github.com/libp2p/go-libp2p/p2p/host/blank"
-	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
-	"github.com/libp2p/go-libp2p/p2p/host/peerstore/pstoremem"
-	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
-	"github.com/libp2p/go-libp2p/p2p/net/swarm"
-	swarmt "github.com/libp2p/go-libp2p/p2p/net/swarm/testing"
-	"github.com/libp2p/go-libp2p/p2p/protocol/identify"
-	"github.com/libp2p/go-libp2p/p2p/protocol/identify/pb"
+	"github.com/JonyBepary/go-libp2p-pq"
+	ic "github.com/JonyBepary/go-libp2p-pq/core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq/core/event"
+	"github.com/JonyBepary/go-libp2p-pq/core/host"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/peerstore"
+	"github.com/JonyBepary/go-libp2p-pq/core/protocol"
+	"github.com/JonyBepary/go-libp2p-pq/core/record"
+	coretest "github.com/JonyBepary/go-libp2p-pq/core/test"
+	basichost "github.com/JonyBepary/go-libp2p-pq/p2p/host/basic"
+	blhost "github.com/JonyBepary/go-libp2p-pq/p2p/host/blank"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/host/eventbus"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/host/peerstore/pstoremem"
+	mocknet "github.com/JonyBepary/go-libp2p-pq/p2p/net/mock"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/net/swarm"
+	swarmt "github.com/JonyBepary/go-libp2p-pq/p2p/net/swarm/testing"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/protocol/identify"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/protocol/identify/pb"
 
 	mockClock "github.com/benbjohnson/clock"
 	logging "github.com/ipfs/go-log/v2"
@@ -79,7 +79,7 @@ func testHasProtocolVersions(t *testing.T, h host.Host, p peer.ID) {
 		t.Error("protocol mismatch", err)
 	}
 	v, err = h.Peerstore().Get(p, "AgentVersion")
-	if v.(string) != "github.com/libp2p/go-libp2p" { // this is the default user agent
+	if v.(string) != "github.com/JonyBepary/go-libp2p-pq" { // this is the default user agent
 		t.Error("agent version mismatch", err)
 	}
 }
@@ -549,7 +549,7 @@ func TestUserAgent(t *testing.T) {
 func TestNotListening(t *testing.T) {
 	// Make sure we don't panic if we're not listening on any addresses.
 	//
-	// https://github.com/libp2p/go-libp2p/issues/939
+	// https://github.com/JonyBepary/go-libp2p-pq/issues/939
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

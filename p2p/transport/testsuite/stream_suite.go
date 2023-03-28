@@ -15,10 +15,10 @@ import (
 	crand "crypto/rand"
 	mrand "math/rand"
 
-	"github.com/libp2p/go-libp2p-testing/race"
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/core/transport"
+	"github.com/JonyBepary/go-libp2p-pq-testing/race"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/transport"
 
 	ma "github.com/multiformats/go-multiaddr"
 )
@@ -421,7 +421,7 @@ func SubtestStressManyConn10Stream50Msg(t *testing.T, ta, tb transport.Transport
 	connNum := 5
 	if runtime.GOOS == "linux" {
 		// Linux can handle a higher number of conns here than other platforms in CI.
-		// See https://github.com/libp2p/go-libp2p/issues/1498.
+		// See https://github.com/JonyBepary/go-libp2p-pq/issues/1498.
 		connNum = 50
 	}
 	SubtestStress(t, ta, tb, maddr, peerA, Options{

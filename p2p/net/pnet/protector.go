@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net"
 
-	ipnet "github.com/libp2p/go-libp2p/core/pnet"
+	ipnet "github.com/JonyBepary/go-libp2p-pq/core/pnet"
 )
 
 // NewProtectedConn creates a new protected connection

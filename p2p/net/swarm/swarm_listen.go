@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/libp2p/go-libp2p/core/canonicallog"
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/transport"
+	"github.com/JonyBepary/go-libp2p-pq/core/canonicallog"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/transport"
 
 	ma "github.com/multiformats/go-multiaddr"
 )

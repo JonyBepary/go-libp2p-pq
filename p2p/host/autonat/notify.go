@@ -1,7 +1,7 @@
 package autonat
 
 import (
-	"github.com/libp2p/go-libp2p/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
 
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr/net"

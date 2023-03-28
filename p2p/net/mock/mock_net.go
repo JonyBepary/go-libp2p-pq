@@ -8,13 +8,13 @@ import (
 	"sort"
 	"sync"
 
-	ic "github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/host"
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/core/peerstore"
-	bhost "github.com/libp2p/go-libp2p/p2p/host/basic"
-	"github.com/libp2p/go-libp2p/p2p/host/peerstore/pstoremem"
+	ic "github.com/JonyBepary/go-libp2p-pq/core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq/core/host"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/peerstore"
+	bhost "github.com/JonyBepary/go-libp2p-pq/p2p/host/basic"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/host/peerstore/pstoremem"
 
 	ma "github.com/multiformats/go-multiaddr"
 )

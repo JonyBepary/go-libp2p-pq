@@ -1,6 +1,6 @@
 # go-libp2p-pubsub chat with rendezvous example
 
-This example project allows multiple peers to chat among each other using go-libp2p-pubsub. 
+This example project allows multiple peers to chat among each other using go-libp2p-pubsub.
 
 Peers are discovered using a DHT, so no prior information (other than the rendezvous name) is required for each peer.
 
@@ -9,7 +9,7 @@ Peers are discovered using a DHT, so no prior information (other than the rendez
 Clone this repo, then `cd` into the `examples/pubsub/basic-chat-with-rendezvous` directory:
 
 ```shell
-git clone https://github.com/libp2p/go-libp2p
+git clone https://github.com/JonyBepary/go-libp2p-pq
 cd go-libp2p/examples/pubsub/basic-chat-with-rendezvous
 ```
 
@@ -33,4 +33,3 @@ Try opening several terminals, each running the app. When you type a message and
 should appear in all others that are connected to the same topic.
 
 To quit, hit `Ctrl-C`.
-

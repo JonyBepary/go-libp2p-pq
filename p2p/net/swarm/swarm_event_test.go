@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/libp2p/go-libp2p/core/event"
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
-	. "github.com/libp2p/go-libp2p/p2p/net/swarm"
-	swarmt "github.com/libp2p/go-libp2p/p2p/net/swarm/testing"
+	"github.com/JonyBepary/go-libp2p-pq/core/event"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/host/eventbus"
+	. "github.com/JonyBepary/go-libp2p-pq/p2p/net/swarm"
+	swarmt "github.com/JonyBepary/go-libp2p-pq/p2p/net/swarm/testing"
 
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/stretchr/testify/require"

@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
+	ic "github.com/JonyBepary/go-libp2p-pq/core/crypto"
 	"github.com/benbjohnson/clock"
-	ic "github.com/libp2p/go-libp2p/core/crypto"
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/multiformats/go-multihash"
 )

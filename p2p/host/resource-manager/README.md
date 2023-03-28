@@ -65,6 +65,7 @@ host, err := libp2p.New(libp2p.ResourceManager(rm))
 ```
 
 ### Saving the limits config
+
 The easiest way to save the defined limits is to serialize the `PartialLimitConfig`
 type as JSON.
 
@@ -134,7 +135,7 @@ computational time) at the system level. They are also a scarce
 resource, as typically (unless the user explicitly intervenes) they
 are constrained by the system. Exhaustion of file descriptors may
 render the application incapable of operating (e.g., because it is
-unable to open a file).  This is important for libp2p because most
+unable to open a file). This is important for libp2p because most
 operating systems represent sockets as file descriptors.
 
 ### Connections
@@ -147,7 +148,7 @@ consume memory, goroutines, and possibly file descriptors.
 We distinguish between inbound and outbound connections, as the former
 are initiated by remote peers and consume resources in response to
 network events and thus need to be tightly controlled in order to
-protect the application from overload or attack.  Outbound
+protect the application from overload or attack. Outbound
 connections are typically initiated by the application's volition and
 don't need to be controlled as tightly. However, outbound connections
 still consume resources and may be initiated in response to network
@@ -176,7 +177,6 @@ interaction. However, they can also be initiated in response to
 network events because of application or service logic, so we still
 need to constrain them.
 
-
 ## Resource Scopes
 
 The Resource Manager is based on the concept of resource
@@ -187,6 +187,7 @@ resource accounting. Downstream resource usage is aggregated at scopes
 higher up the graph.
 
 The following diagram depicts the canonical scope graph:
+
 ```
 System
   +------------> Transient.............+................+
@@ -210,7 +211,7 @@ constrains all other scopes and institutes global hard limits.
 ### The Transient Scope
 
 The transient scope accounts for resources that are in the process of
-full establishment.  For instance, a new connection prior to the
+full establishment. For instance, a new connection prior to the
 handshake does not belong to any peer, but it still needs to be
 constrained as this opens an avenue for attacks in transient resource
 usage. Similarly, a stream that has not negotiated a protocol yet is
@@ -261,7 +262,7 @@ explicitly restrict specific protocols.
 
 For instance, a service that is not aware of the resource manager and
 has not been ported to mark its streams, may still gain limits
-transparently without any programmer intervention.  Furthermore, the
+transparently without any programmer intervention. Furthermore, the
 protocol scope can constrain resource usage for services that
 implement multiple protocols for the sake of backwards
 compatibility. A tighter limit in some older protocol can protect the
@@ -284,7 +285,6 @@ resource consumption by a single remote peer.
 This ensures that no single peer can use more resources than allowed
 by the peer limits. Every peer has a default limit, but the programmer
 may raise (or lower) limits for specific peers.
-
 
 ### Connection Scopes
 
@@ -319,12 +319,12 @@ uses a buffer.
 ## Limits
 
 Each resource scope has an associated limit object, which designates
-limits for all [basic resources](#basic-resources).  The limit is checked every time some
+limits for all [basic resources](#basic-resources). The limit is checked every time some
 resource is reserved and provides the system with an opportunity to
 constrain resource usage.
 
 There are separate limits for each class of scope, allowing for
-multiresolution and aggregate resource accounting.  As such, we have
+multiresolution and aggregate resource accounting. As such, we have
 limits for the system and transient scopes, default and specific
 limits for services, protocols, and peers, and limits for connections
 and streams.
@@ -356,6 +356,7 @@ system, and dedicates up to 1/8 of the memory and 1/2 of the file descriptors to
 libp2p.
 
 For example, one might set:
+
 ```go
 var scalingLimits = ScalingLimitConfig{
   SystemBaseLimit: BaseLimit{
@@ -386,11 +387,11 @@ node will have, no matter how little memory it possesses. For every GB of memory
 passed into the `Scale` method, an increase of (`SystemLimitIncrease`) is added.
 
 For Example, calling `Scale` with 4 GB of memory will result in a limit of 384 for
-`Conns` (128 + 4*64).
+`Conns` (128 + 4\*64).
 
 The `FDFraction` defines how many of the file descriptors are allocated to this
 scope. In the example above, when called with a file descriptor value of 1000,
-this would result in a limit of 1000 (1000 * 1) file descriptors for the system
+this would result in a limit of 1000 (1000 \* 1) file descriptors for the system
 scope. See `TestReadmeExample` in `limit_test.go`.
 
 Note that we only showed the configuration for the system scope here, equivalent
@@ -411,6 +412,7 @@ apply changes to a `BaseLimit`, `BaseLimitIncrease`, and `ConcreteLimitConfig` w
 `.Apply`.
 
 Example
+
 ```
 // An example on how to tweak the default limits
 tweakedDefaults := DefaultLimits
@@ -422,7 +424,7 @@ tweakedDefaults.ProtocolBaseLimit.StreamsOutbound = 512
 ### How to tune your limits
 
 Once you've set your limits and monitoring (see [Monitoring](#monitoring) below)
-you can now tune your limits better.  The `rcmgr_blocked_resources` metric will
+you can now tune your limits better. The `rcmgr_blocked_resources` metric will
 tell you what was blocked and for what scope. If you see a steady stream of
 these blocked requests it means your resource limits are too low for your usage.
 If you see a rare sudden spike, this is okay and it means the resource manager
@@ -441,6 +443,7 @@ you are at your limit for the number of streams you can have, and you try to
 open one more.
 
 Example Log:
+
 ```
 2022-08-12T15:49:35.459-0700	DEBUG	rcmgr	go-libp2p-resource-manager@v0.5.3/scope.go:541	blocked connection from constraining edge	{"scope": "conn-19667", "edge": "system", "direction": "Inbound", "usefd": false, "current": 100, "attempted": 1, "limit": 100, "stat": {"NumStreamsInbound":28,"NumStreamsOutbound":66,"NumConnsInbound":37,"NumConnsOutbound":63,"NumFD":33,"Memory":8687616}, "error": "system: cannot reserve connection: resource limit exceeded"}
 ```
@@ -510,10 +513,11 @@ Look at `WithAllowlistedMultiaddrs` and its example in the GoDoc to learn more.
 ## ConnManager vs Resource Manager
 
 go-libp2p already includes a [connection
-manager](https://pkg.go.dev/github.com/libp2p/go-libp2p/core/connmgr#ConnManager),
+manager](https://pkg.go.dev/github.com/JonyBepary/go-libp2p-pq/core/connmgr#ConnManager),
 so what's the difference between the `ConnManager` and the `ResourceManager`?
 
 ConnManager:
+
 1. Configured with a low and high watermark number of connections.
 2. Attempts to maintain the number of connections between the low and high
    markers.
@@ -528,6 +532,7 @@ ConnManager:
 7. No concept of scopes (like the resource manager).
 
 Resource Manager:
+
 1. Configured with limits on the number of outgoing and incoming connections at
    different [resource scopes](#resource-scopes).
 2. Will block adding any more connections if any of the scope-specific limits would be exceeded.
@@ -537,7 +542,7 @@ and limits interact with each other?". The short answer is that they don't know
 about each other. This can lead to some surprising subtleties, such as the
 trimming never happening because the resource manager's limit is lower than the
 high watermark. This is confusing, and we'd like to fix it. The issue is
-captured in [go-libp2p#1640](https://github.com/libp2p/go-libp2p/issues/1640).
+captured in [go-libp2p#1640](https://github.com/JonyBepary/go-libp2p-pq/issues/1640).
 
 When configuring the resource manager and connection manager, you should set the
 limits in the resource manager as your hard limits that you would never want to
@@ -556,6 +561,7 @@ When the stream scope is first opened, it is created by calling
 `ResourceManager.OpenStream`.
 
 Initially the stream is constrained by:
+
 - the system scope, where global hard limits apply.
 - the transient scope, where unnegotiated streams live.
 - the peer scope, where the limits for the peer at the other end of the stream
@@ -567,6 +573,7 @@ transient scope is removed and the stream is now constrained by the
 protocol instead.
 
 More specifically, the following constraints apply:
+
 - the system scope, where global hard limits apply.
 - the peer scope, where the limits for the peer at the other end of the stream
   apply.
@@ -574,27 +581,26 @@ More specifically, the following constraints apply:
 
 The existence of the protocol limit allows us to implicitly constrain
 streams for services that have not been ported to the resource manager
-yet.  Once the programmer attaches a stream to a service by calling
+yet. Once the programmer attaches a stream to a service by calling
 `StreamScope.SetService`, the stream resources are aggregated and constrained
 by the service scope in addition to its protocol scope.
 
 More specifically the following constraints apply:
+
 - the system scope, where global hard limits apply.
 - the peer scope, where the limits for the peer at the other end of the stream
   apply.
 - the service scope, where the limits of the specific service owning the stream apply.
 - the protcol scope, where the limits of the specific protocol for the stream apply.
 
-
 The resource transfer that happens in the `SetProtocol` and `SetService`
 gives the opportunity to the resource manager to gate the streams. If
 the transfer results in exceeding the scope limits, then a error
 indicating "resource limit exceeded" is returned. The wrapped error
 includes the name of the scope rejecting the resource acquisition to
-aid understanding of applicable limits.  Note that the (wrapped) error
+aid understanding of applicable limits. Note that the (wrapped) error
 implements `net.Error` and is marked as temporary, so that the
 programmer can handle by backoff retry.
-
 
 ## Implementation Notes
 

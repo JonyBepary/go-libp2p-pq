@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/transport"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/transport"
 
 	logging "github.com/ipfs/go-log/v2"
 	tec "github.com/jbenet/go-temp-err-catcher"

@@ -3,8 +3,8 @@ package websocket
 import (
 	"net"
 
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/transport"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/transport"
 )
 
 const maxReadAttempts = 5

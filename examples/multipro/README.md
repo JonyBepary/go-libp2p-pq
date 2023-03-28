@@ -1,7 +1,7 @@
 # Protocol Multiplexing using rpc-style protobufs with libp2p
 
 This example shows how to use protobufs to encode and transmit information between libp2p hosts using libp2p Streams.
-This example expects that you are already familiar with the [echo example](https://github.com/libp2p/go-libp2p-examples/tree/master/echo).
+This example expects that you are already familiar with the [echo example](https://github.com/JonyBepary/go-libp2p-pq-examples/tree/master/echo).
 
 ## Build
 
@@ -31,6 +31,7 @@ The example shows how to match async received responses with their requests. Thi
 The idea is to use libp2p protocol multiplexing on a per-message basis.
 
 ### Features
+
 1. 2 fully implemented protocols using an RPC-like request-response pattern - Ping and Echo
 2. Scaffolding for quickly implementing new app-level versioned RPC-like protocols
 3. Full authentication of incoming message data by author (who might not be the message's sender peer)
@@ -38,4 +39,5 @@ The idea is to use libp2p protocol multiplexing on a per-message basis.
 5. Full access to request data when processing a response.
 
 ## Author
+
 @avive

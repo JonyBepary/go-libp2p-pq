@@ -6,9 +6,9 @@ import (
 	"net"
 	"testing"
 
-	"github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/core/sec"
+	"github.com/JonyBepary/go-libp2p-pq/core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/sec"
 
 	"github.com/stretchr/testify/require"
 )

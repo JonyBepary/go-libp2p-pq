@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
 
-	pubsub "github.com/libp2p/go-libp2p-pubsub"
+	pubsub "github.com/JonyBepary/go-libp2p-pq-pubsub"
 )
 
 // ChatRoomBufSize is the number of incoming messages to buffer for each topic.

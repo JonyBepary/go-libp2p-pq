@@ -5,12 +5,12 @@ import (
 	"io"
 	"log"
 
-	"github.com/libp2p/go-libp2p/core/host"
-	"github.com/libp2p/go-libp2p/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/host"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
 
+	p2p "github.com/JonyBepary/go-libp2p-pq/examples/multipro/pb"
 	proto "github.com/gogo/protobuf/proto"
 	uuid "github.com/google/uuid"
-	p2p "github.com/libp2p/go-libp2p/examples/multipro/pb"
 )
 
 // pattern: /protocol-name/request-or-response-message/version

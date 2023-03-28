@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/p2p/host/peerstore/pstoreds/pb"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/host/peerstore/pstoreds/pb"
 	"google.golang.org/protobuf/proto"
 
 	ds "github.com/ipfs/go-datastore"

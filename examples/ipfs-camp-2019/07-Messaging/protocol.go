@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
+	pubsub "github.com/JonyBepary/go-libp2p-pq-pubsub"
 	"github.com/gogo/protobuf/proto"
-	pubsub "github.com/libp2p/go-libp2p-pubsub"
 )
 
 func chatInputLoop(ctx context.Context, topic *pubsub.Topic, donec chan struct{}) {

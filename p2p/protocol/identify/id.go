@@ -7,16 +7,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/event"
-	"github.com/libp2p/go-libp2p/core/host"
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/core/peerstore"
-	"github.com/libp2p/go-libp2p/core/protocol"
-	"github.com/libp2p/go-libp2p/core/record"
-	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
-	"github.com/libp2p/go-libp2p/p2p/protocol/identify/pb"
+	"github.com/JonyBepary/go-libp2p-pq/core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq/core/event"
+	"github.com/JonyBepary/go-libp2p-pq/core/host"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/peerstore"
+	"github.com/JonyBepary/go-libp2p-pq/core/protocol"
+	"github.com/JonyBepary/go-libp2p-pq/core/record"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/host/eventbus"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/protocol/identify/pb"
 
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/libp2p/go-msgio/pbio"
@@ -53,7 +53,7 @@ const (
 	maxMessages  = 10
 )
 
-var defaultUserAgent = "github.com/libp2p/go-libp2p"
+var defaultUserAgent = "github.com/JonyBepary/go-libp2p-pq"
 
 type identifySnapshot struct {
 	seq       uint64

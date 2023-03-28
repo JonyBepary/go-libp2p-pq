@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/libp2p/go-libp2p/p2p/metricshelper"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/metricshelper"
 
 	"github.com/prometheus/client_golang/prometheus"
 )

@@ -6,10 +6,10 @@ import (
 	"net"
 	"testing"
 
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/core/transport"
-	blankhost "github.com/libp2p/go-libp2p/p2p/host/blank"
-	swarmt "github.com/libp2p/go-libp2p/p2p/net/swarm/testing"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/transport"
+	blankhost "github.com/JonyBepary/go-libp2p-pq/p2p/host/blank"
+	swarmt "github.com/JonyBepary/go-libp2p-pq/p2p/net/swarm/testing"
 
 	"github.com/multiformats/go-multiaddr"
 )

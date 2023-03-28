@@ -1,4 +1,4 @@
-module github.com/libp2p/go-libp2p/examples
+module github.com/JonyBepary/go-libp2p-pq/examples
 
 go 1.19
 
@@ -7,8 +7,8 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/ipfs/go-datastore v0.6.0
 	github.com/ipfs/go-log/v2 v2.5.1
-	github.com/libp2p/go-libp2p v0.26.4
-	github.com/libp2p/go-libp2p-kad-dht v0.20.1-0.20230209220319-6c2045abad23
+	github.com/JonyBepary/go-libp2p-pq v0.26.4
+	github.com/JonyBepary/go-libp2p-pq-kad-dht v0.20.1-0.20230209220319-6c2045abad23
 	github.com/multiformats/go-multiaddr v0.8.0
 	github.com/theQRL/go-libp2p-qrl v0.0.0-20220905140727-a440bc5ac394
 )
@@ -50,10 +50,10 @@ require (
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/libp2p/go-cidranger v1.1.0 // indirect
 	github.com/libp2p/go-flow-metrics v0.1.0 // indirect
-	github.com/libp2p/go-libp2p-asn-util v0.2.0 // indirect
-	github.com/libp2p/go-libp2p-core v0.7.0 // indirect
-	github.com/libp2p/go-libp2p-kbucket v0.5.0 // indirect
-	github.com/libp2p/go-libp2p-record v0.2.0 // indirect
+	github.com/JonyBepary/go-libp2p-pq-asn-util v0.2.0 // indirect
+	github.com/JonyBepary/go-libp2p-pq-core v0.7.0 // indirect
+	github.com/JonyBepary/go-libp2p-pq-kbucket v0.5.0 // indirect
+	github.com/JonyBepary/go-libp2p-pq-record v0.2.0 // indirect
 	github.com/libp2p/go-msgio v0.3.0 // indirect
 	github.com/libp2p/go-nat v0.1.0 // indirect
 	github.com/libp2p/go-netroute v0.2.1 // indirect

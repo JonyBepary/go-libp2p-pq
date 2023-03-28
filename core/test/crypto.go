@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"sync/atomic"
 
-	ci "github.com/libp2p/go-libp2p/core/crypto"
+	ci "github.com/JonyBepary/go-libp2p-pq/core/crypto"
 )
 
 var globalSeed atomic.Int64

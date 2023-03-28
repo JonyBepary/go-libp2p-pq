@@ -11,11 +11,11 @@ import (
 	"strings"
 
 	// We need to import libp2p's libraries that we use in this project.
-	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p/core/host"
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libp2p/go-libp2p/core/peerstore"
+	"github.com/JonyBepary/go-libp2p-pq"
+	"github.com/JonyBepary/go-libp2p-pq/core/host"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	"github.com/JonyBepary/go-libp2p-pq/core/peerstore"
 
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr/net"
@@ -225,7 +225,7 @@ func addAddrToPeerstore(h host.Host, addr string) peer.ID {
 const help = `
 This example creates a simple HTTP Proxy using two libp2p peers. The first peer
 provides an HTTP server locally which tunnels the HTTP requests with libp2p
-to a remote peer. The remote peer performs the requests and 
+to a remote peer. The remote peer performs the requests and
 send the sends the response back.
 
 Usage: Start remote peer first with:   ./proxy

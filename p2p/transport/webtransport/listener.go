@@ -8,11 +8,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/libp2p/go-libp2p/core/network"
-	tpt "github.com/libp2p/go-libp2p/core/transport"
-	"github.com/libp2p/go-libp2p/p2p/security/noise"
-	"github.com/libp2p/go-libp2p/p2p/security/noise/pb"
-	"github.com/libp2p/go-libp2p/p2p/transport/quicreuse"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	tpt "github.com/JonyBepary/go-libp2p-pq/core/transport"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/security/noise"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/security/noise/pb"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/transport/quicreuse"
 
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/quic-go/webtransport-go"

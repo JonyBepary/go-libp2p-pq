@@ -17,7 +17,7 @@ import (
 
 	"golang.org/x/crypto/hkdf"
 
-	ic "github.com/libp2p/go-libp2p/core/crypto"
+	ic "github.com/JonyBepary/go-libp2p-pq/core/crypto"
 
 	"github.com/multiformats/go-multihash"
 	"github.com/quic-go/quic-go/http3"

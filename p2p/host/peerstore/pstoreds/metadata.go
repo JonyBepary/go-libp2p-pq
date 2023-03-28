@@ -5,10 +5,10 @@ import (
 	"context"
 	"encoding/gob"
 
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	pstore "github.com/JonyBepary/go-libp2p-pq/core/peerstore"
+	"github.com/JonyBepary/go-libp2p-pq/core/protocol"
 	pool "github.com/libp2p/go-buffer-pool"
-	"github.com/libp2p/go-libp2p/core/peer"
-	pstore "github.com/libp2p/go-libp2p/core/peerstore"
-	"github.com/libp2p/go-libp2p/core/protocol"
 
 	ds "github.com/ipfs/go-datastore"
 	"github.com/ipfs/go-datastore/query"

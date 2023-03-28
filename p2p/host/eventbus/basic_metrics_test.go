@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/libp2p/go-libp2p/core/event"
+	"github.com/JonyBepary/go-libp2p-pq/core/event"
 )
 
 func BenchmarkEventEmitted(b *testing.B) {

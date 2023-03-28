@@ -8,11 +8,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/libp2p/go-libp2p/p2p/transport/quicreuse"
+	"github.com/JonyBepary/go-libp2p-pq/p2p/transport/quicreuse"
 
-	ic "github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/peer"
-	libp2pquic "github.com/libp2p/go-libp2p/p2p/transport/quic"
+	ic "github.com/JonyBepary/go-libp2p-pq/core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	libp2pquic "github.com/JonyBepary/go-libp2p-pq/p2p/transport/quic"
 
 	ma "github.com/multiformats/go-multiaddr"
 )

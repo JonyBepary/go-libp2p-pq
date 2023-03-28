@@ -7,8 +7,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/libp2p/go-libp2p/core/host"
-	"github.com/libp2p/go-libp2p/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/host"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
 )
 
 const chatProtocol = "/libp2p/chat/1.0.0"

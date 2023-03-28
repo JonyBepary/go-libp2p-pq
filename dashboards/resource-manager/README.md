@@ -8,11 +8,11 @@ import follow the Grafana docs [here](https://grafana.com/docs/grafana/latest/da
 To make sure you're emitting the correct metrics you'll have to register the
 metrics with a Prometheus Registerer. For example:
 
-``` go
+```go
 import (
     // ...
-	rcmgr "github.com/libp2p/go-libp2p/p2p/host/resource-manager"
-	rcmgrObs "github.com/libp2p/go-libp2p/p2p/host/resource-manager/obs"
+	rcmgr "github.com/JonyBepary/go-libp2p-pq/p2p/host/resource-manager"
+	rcmgrObs "github.com/JonyBepary/go-libp2p-pq/p2p/host/resource-manager/obs"
 
 	"github.com/prometheus/client_golang/prometheus"
 )

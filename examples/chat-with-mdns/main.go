@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/libp2p/go-libp2p/core/protocol"
+	"github.com/JonyBepary/go-libp2p-pq"
+	"github.com/JonyBepary/go-libp2p-pq/core/network"
+	"github.com/JonyBepary/go-libp2p-pq/core/protocol"
 	"github.com/theQRL/go-libp2p-qrl/crypto"
 
 	"github.com/multiformats/go-multiaddr"

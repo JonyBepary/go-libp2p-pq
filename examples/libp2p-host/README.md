@@ -11,8 +11,8 @@ import (
 	"crypto/rand"
 	"fmt"
 
-	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq"
+	"github.com/JonyBepary/go-libp2p-pq-core/crypto"
 )
 
 // To construct a simple host with all the default settings, just use `New`
@@ -25,7 +25,7 @@ defer h.Close()
 fmt.Printf("Hello World, my hosts ID is %s\n", h.ID())
 ```
 
-If you want more control over the configuration, you can specify some options to the constructor. For a full list of all the configuration supported by the constructor [see the different options in the docs](https://godoc.org/github.com/libp2p/go-libp2p).
+If you want more control over the configuration, you can specify some options to the constructor. For a full list of all the configuration supported by the constructor [see the different options in the docs](https://godoc.org/github.com/JonyBepary/go-libp2p-pq).
 
 In this snippet we set a number of useful options like a custom ID and enable routing. This will improve discoverability and reachability of the peer on NAT'ed environments:
 

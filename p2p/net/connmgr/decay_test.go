@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/libp2p/go-libp2p/core/connmgr"
-	"github.com/libp2p/go-libp2p/core/peer"
-	tu "github.com/libp2p/go-libp2p/core/test"
+	"github.com/JonyBepary/go-libp2p-pq/core/connmgr"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
+	tu "github.com/JonyBepary/go-libp2p-pq/core/test"
 
 	"github.com/benbjohnson/clock"
 	"github.com/stretchr/testify/require"

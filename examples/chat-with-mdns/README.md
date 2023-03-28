@@ -19,10 +19,10 @@ Use two different terminal windows to run
 ./chat-with-mdns -port 6668
 ```
 
-
 ## So how does it work?
 
 1. **Configure a p2p host**
+
 ```go
 ctx := context.Background()
 
@@ -30,17 +30,19 @@ ctx := context.Background()
 // Other options can be added here.
 host, err := libp2p.New()
 ```
-[libp2p.New](https://godoc.org/github.com/libp2p/go-libp2p#New) is the constructor for libp2p node. It creates a host with given configuration.
+
+[libp2p.New](https://godoc.org/github.com/JonyBepary/go-libp2p-pq#New) is the constructor for libp2p node. It creates a host with given configuration.
 
 2. **Set a default handler function for incoming connections.**
 
 This function is called on the local peer when a remote peer initiate a connection and starts a stream with the local peer.
+
 ```go
 // Set a function as stream handler.
 host.SetStreamHandler("/chat/1.1.0", handleStream)
 ```
 
-```handleStream``` is executed for each new stream incoming to the local peer. ```stream``` is used to exchange data between local and remote peer. This example uses non blocking functions for reading and writing from this stream.
+`handleStream` is executed for each new stream incoming to the local peer. `stream` is used to exchange data between local and remote peer. This example uses non blocking functions for reading and writing from this stream.
 
 ```go
 func handleStream(stream net.Stream) {
@@ -57,18 +59,18 @@ func handleStream(stream net.Stream) {
 
 3. **Find peers nearby using mdns**
 
-Start [mdns discovery](https://godoc.org/github.com/libp2p/go-libp2p/p2p/discovery#NewMdnsService) service in host.
+Start [mdns discovery](https://godoc.org/github.com/JonyBepary/go-libp2p-pq/p2p/discovery#NewMdnsService) service in host.
 
 ```go
 ser, err := discovery.NewMdnsService(peerhost, rendezvous)
 ```
-register [Notifee interface](https://godoc.org/github.com/libp2p/go-libp2p/p2p/discovery#Notifee) with service so that we get notified about peer discovery
+
+register [Notifee interface](https://godoc.org/github.com/JonyBepary/go-libp2p-pq/p2p/discovery#Notifee) with service so that we get notified about peer discovery
 
 ```go
 	n := &discoveryNotifee{}
 	ser.RegisterNotifee(n)
 ```
-
 
 4. **Open streams to peers found.**
 
@@ -97,4 +99,5 @@ Finally we open stream to the peers we found, as we find them
 ```
 
 ## Authors
+
 1. Bineesh Lazar

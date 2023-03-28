@@ -16,8 +16,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	ic "github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/peer"
+	ic "github.com/JonyBepary/go-libp2p-pq/core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq/core/peer"
 )
 
 const certValidityPeriod = 100 * 365 * 24 * time.Hour // ~100 years

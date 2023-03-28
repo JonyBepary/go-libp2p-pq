@@ -1,6 +1,6 @@
 package metricshelper
 
-import "github.com/libp2p/go-libp2p/core/network"
+import "github.com/JonyBepary/go-libp2p-pq/core/network"
 
 func GetDirection(dir network.Direction) string {
 	switch dir {

@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/internal/catch"
-	"github.com/libp2p/go-libp2p/core/record/pb"
+	"github.com/JonyBepary/go-libp2p-pq/core/crypto"
+	"github.com/JonyBepary/go-libp2p-pq/core/internal/catch"
+	"github.com/JonyBepary/go-libp2p-pq/core/record/pb"
 
 	pool "github.com/libp2p/go-buffer-pool"
 

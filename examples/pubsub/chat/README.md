@@ -13,7 +13,7 @@ the details of configuration.
 Clone this repo, then `cd` into the `examples/pubsub/chat` directory:
 
 ```shell
-git clone https://github.com/libp2p/go-libp2p
+git clone https://github.com/JonyBepary/go-libp2p-pq
 cd go-libp2p/examples/pubsub/chat
 ```
 
@@ -41,7 +41,7 @@ go run . -room=planet-express
 
 It's usually more fun to chat with others, so open a new terminal and run the app again.
 If you set a custom chat room name with the `-room` flag, make sure you use the same one
-for both apps. Once the new instance starts, the two chat apps should discover each other 
+for both apps. Once the new instance starts, the two chat apps should discover each other
 automatically using mDNS, and typing a message into one app will send it to any others that are open.
 
 To quit, hit `Ctrl-C`, or type `/quit` into the input field.
@@ -68,9 +68,9 @@ func main() {
 	}
 
    // (omitted) setup mDNS discovery...
-   
+
 }
-``` 
+```
 
 We configure the host to use local mDNS discovery, so that we can find other peers to chat with
 on the local network. We also parse a few command line flags, so we can set a friendly nickname,
@@ -85,7 +85,7 @@ Once we have a `Host` with an attached `PubSub` service, we join a `ChatRoom`:
   		panic(err)
   	}
 ```
- 
+
 `ChatRoom` is a custom struct defined in [`chatroom.go`](./chatroom.go):
 
 ```go
@@ -122,10 +122,10 @@ This lets us attach friendly nicknames to the messages for display. A real app m
 nicks are unique, but we just let anyone claim whatever nick they want and send it along with their messages.
 
 The `ChatMessage`s are encoded to JSON and published to the PubSub topic, in the `Data` field of a `pubsub.Message`.
-We could have used any encoding, as long as everyone in the topic agrees on the format, but JSON is simple and good 
-enough for our purposes. 
+We could have used any encoding, as long as everyone in the topic agrees on the format, but JSON is simple and good
+enough for our purposes.
 
-To send messages, we have a `Publish` method, which wraps messages in `ChatMessage` structs, encodes them, and publishes 
+To send messages, we have a `Publish` method, which wraps messages in `ChatMessage` structs, encodes them, and publishes
 to the `pubsub.Topic`:
 
 ```go
@@ -177,7 +177,7 @@ func (cr *ChatRoom) ListPeers() []peer.ID {
 }
 ```
 
-That's pretty much it for the `ChatRoom`! 
+That's pretty much it for the `ChatRoom`!
 
 Back in `main.go`, once we've created our `ChatRoom`, we pass it
 to `NewChatUI`, which constructs a three panel text UI for entering and viewing chat messages, because UIs
