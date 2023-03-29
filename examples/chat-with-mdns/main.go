@@ -9,9 +9,9 @@ import (
 	"os"
 
 	"github.com/JonyBepary/go-libp2p-pq"
+	"github.com/JonyBepary/go-libp2p-pq/core/crypto"
 	"github.com/JonyBepary/go-libp2p-pq/core/network"
 	"github.com/JonyBepary/go-libp2p-pq/core/protocol"
-	"github.com/theQRL/go-libp2p-qrl/crypto"
 
 	"github.com/multiformats/go-multiaddr"
 )

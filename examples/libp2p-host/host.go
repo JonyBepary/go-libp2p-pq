@@ -8,12 +8,12 @@ import (
 	"github.com/JonyBepary/go-libp2p-pq/p2p/net/connmgr"
 
 	"github.com/JonyBepary/go-libp2p-pq"
-	dht "github.com/JonyBepary/go-libp2p-pq-kad-dht"
 	"github.com/JonyBepary/go-libp2p-pq/core/crypto"
 	"github.com/JonyBepary/go-libp2p-pq/core/host"
 	"github.com/JonyBepary/go-libp2p-pq/core/routing"
 	"github.com/JonyBepary/go-libp2p-pq/p2p/security/noise"
 	libp2ptls "github.com/JonyBepary/go-libp2p-pq/p2p/security/tls"
+	dht "github.com/libp2p/go-libp2p-kad-dht"
 )
 
 func main() {

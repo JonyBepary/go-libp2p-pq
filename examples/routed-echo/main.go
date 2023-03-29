@@ -20,8 +20,8 @@ import (
 	dsync "github.com/ipfs/go-datastore/sync"
 	golog "github.com/ipfs/go-log/v2"
 
-	dht "github.com/JonyBepary/go-libp2p-pq-kad-dht"
 	rhost "github.com/JonyBepary/go-libp2p-pq/p2p/host/routed"
+	dht "github.com/libp2p/go-libp2p-kad-dht"
 	ma "github.com/multiformats/go-multiaddr"
 )
 

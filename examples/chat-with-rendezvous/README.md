@@ -98,7 +98,7 @@ discovery.Advertise(ctx, routingDiscovery, config.RendezvousString)
 peerChan, err := routingDiscovery.FindPeers(ctx, config.RendezvousString)
 ```
 
-The [discovery](https://pkg.go.dev/github.com/JonyBepary/go-libp2p-pq/p2p/discovery/routing) package uses the DHT internally to [provide](https://pkg.go.dev/github.com/JonyBepary/go-libp2p-pq-kad-dht#IpfsDHT.Provide) and [findProviders](https://pkg.go.dev/github.com/JonyBepary/go-libp2p-pq-kad-dht#IpfsDHT.FindProviders).
+The [discovery](https://pkg.go.dev/github.com/JonyBepary/go-libp2p-pq/p2p/discovery/routing) package uses the DHT internally to [provide](https://pkg.go.dev/github.com/libp2p/go-libp2p-kad-dht#IpfsDHT.Provide) and [findProviders](https://pkg.go.dev/github.com/libp2p/go-libp2p-kad-dht#IpfsDHT.FindProviders).
 
 **Note:** Although [routingDiscovery.Advertise](https://pkg.go.dev/github.com/JonyBepary/go-libp2p-pq/p2p/discovery/routing#RoutingDiscovery.Advertise) and [routingDiscovery.FindPeers](https://pkg.go.dev/github.com/JonyBepary/go-libp2p-pq/p2p/discovery/routing#RoutingDiscovery.FindPeers) works for a rendezvous peer discovery, this is not the right way of doing it. Libp2p is currently working on an actual rendezvous protocol ([libp2p/specs#56](https://github.com/libp2p/specs/pull/56)) which can be used for bootstrap purposes, real time peer discovery and application specific routing.
 

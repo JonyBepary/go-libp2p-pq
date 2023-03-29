@@ -8,7 +8,6 @@ import (
 	"syscall"
 
 	"github.com/JonyBepary/go-libp2p-pq"
-	kaddht "github.com/JonyBepary/go-libp2p-pq-kad-dht"
 	"github.com/JonyBepary/go-libp2p-pq/core/host"
 	"github.com/JonyBepary/go-libp2p-pq/core/network"
 	"github.com/JonyBepary/go-libp2p-pq/core/peer"
@@ -21,6 +20,7 @@ import (
 	tls "github.com/JonyBepary/go-libp2p-pq/p2p/security/tls"
 	"github.com/JonyBepary/go-libp2p-pq/p2p/transport/tcp"
 	"github.com/JonyBepary/go-libp2p-pq/p2p/transport/websocket"
+	kaddht "github.com/libp2p/go-libp2p-kad-dht"
 
 	"github.com/multiformats/go-multiaddr"
 )

@@ -15,11 +15,11 @@ import (
 	"github.com/JonyBepary/go-libp2p-pq/p2p/transport/tcp"
 	"github.com/JonyBepary/go-libp2p-pq/p2p/transport/websocket"
 
-	kaddht "github.com/JonyBepary/go-libp2p-pq-kad-dht"
 	pubsub "github.com/JonyBepary/go-libp2p-pq-pubsub"
 	"github.com/JonyBepary/go-libp2p-pq/core/host"
 	"github.com/JonyBepary/go-libp2p-pq/core/peer"
 	"github.com/JonyBepary/go-libp2p-pq/core/routing"
+	kaddht "github.com/libp2p/go-libp2p-kad-dht"
 
 	"github.com/multiformats/go-multiaddr"
 )

@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/JonyBepary/go-libp2p-pq v0.26.0
-	github.com/JonyBepary/go-libp2p-pq-kad-dht v0.21.0
+	github.com/libp2p/go-libp2p-kad-dht v0.21.0
 	github.com/JonyBepary/go-libp2p-pq-pubsub v0.9.0
 	github.com/multiformats/go-multiaddr v0.8.0
 )

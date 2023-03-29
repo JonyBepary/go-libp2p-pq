@@ -1,49 +1,40 @@
 package crypto
 
 import (
-	"crypto/sha256"
-	"crypto/subtle"
-	"encoding/hex"
+	"crypto/rand"
 	"errors"
-	"fmt"
 	"io"
-	"reflect"
 
-	"github.com/JonyBepary/go-libp2p-pq/core/crypto"
 	pb "github.com/JonyBepary/go-libp2p-pq/core/crypto/pb"
-	"github.com/golang/protobuf/proto"
-	"github.com/theQRL/go-libp2p-qrl/protos"
-	"github.com/theQRL/go-qrllib/common"
-	"github.com/theQRL/go-qrllib/dilithium"
+	"github.com/cloudflare/circl/sign/dilithium/mode2"
 )
 
 type DilithiumPrivateKey struct {
-	pb *protos.DilithiumKeys
+	pb *mode2.PrivateKey
+	pk *mode2.PublicKey
 }
 
 type DilithiumPublicKey struct {
-	pb *protos.DilithiumPublicKey
+	pb *mode2.PublicKey
 }
 
-func GenerateDilithiumKey(src io.Reader) (crypto.PrivKey, crypto.PubKey, error) {
+func GenerateDilithiumKey(src io.Reader) (PrivKey, PubKey, error) {
 	if !isLoaded {
 		return nil, nil, errors.New("LoadAllExtendedKeyTypes before using")
 	}
-	d := dilithium.New()
-	sk := d.GetSK()
-	pk := d.GetPK()
-	seed := d.GetSeed()
+	r := rand.Reader
+
+	pubkey, privkey, err := mode2.GenerateKey(r)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	return &DilithiumPrivateKey{
-			pb: &protos.DilithiumKeys{
-				Sk:   sk[:],
-				Pk:   pk[:],
-				Seed: seed[:],
-			},
+			pb: privkey,
+			pk: privkey.Public().(*mode2.PublicKey),
 		},
 		&DilithiumPublicKey{
-			pb: &protos.DilithiumPublicKey{
-				Pk: pk[:],
-			},
+			pb: pubkey,
 		},
 		nil
 }
@@ -53,56 +44,32 @@ func (sk *DilithiumPrivateKey) Type() pb.KeyType {
 }
 
 func (sk *DilithiumPrivateKey) Bytes() ([]byte, error) {
-	return crypto.MarshalPrivateKey(sk)
+	return MarshalPrivateKey(sk)
 }
 
 func (sk *DilithiumPrivateKey) Raw() ([]byte, error) {
-	return proto.Marshal(sk.pb)
+	return sk.Bytes()
 }
 
-func (sk *DilithiumPrivateKey) Equals(k crypto.Key) bool {
-	return basicEquals(sk, k)
+func (sk *DilithiumPrivateKey) Equals(k Key) bool {
+	return sk.Equals(k)
 }
 
 func (sk *DilithiumPrivateKey) Sign(data []byte) ([]byte, error) {
-	h := sha256.New()
-	h.Write(data)
-	hash := h.Sum(nil)
-	var pkSized [dilithium.PKSizePacked]uint8
-	var skSized [dilithium.SKSizePacked]uint8
-	var seed [common.SeedSize]uint8
+	r := rand.Reader
 
-	copy(pkSized[:], sk.pb.Pk)
-	copy(skSized[:], sk.pb.Sk)
-	copy(seed[:], sk.pb.Seed)
-
-	//d := dilithium.NewFromKeys(&pkSized, &skSized)
-	d := dilithium.NewDilithiumFromSeed(seed)
-	signature := d.Seal(hash)
-
-	expectedPK := d.GetPK()
-	if hex.EncodeToString(expectedPK[:]) != hex.EncodeToString(sk.pb.Pk) {
-		return nil, fmt.Errorf("pk mismatch")
-	}
-
-	expectedSK := d.GetSK()
-	if hex.EncodeToString(expectedSK[:]) != hex.EncodeToString(sk.pb.Sk) {
-		return nil, fmt.Errorf("sk mismatch")
-	}
-
-	return signature, nil
+	return sk.pb.Sign(r, data, nil)
 }
 
-func (sk *DilithiumPrivateKey) GetPublic() crypto.PubKey {
+func (sk *DilithiumPrivateKey) GetPublic() PubKey {
+
 	return &DilithiumPublicKey{
-		pb: &protos.DilithiumPublicKey{
-			Pk: sk.pb.Pk,
-		},
+		pb: sk.pk,
 	}
 }
 
 func (pk *DilithiumPublicKey) Bytes() ([]byte, error) {
-	return crypto.MarshalPublicKey(pk)
+	return pk.pb.MarshalBinary()
 }
 
 func (pk *DilithiumPublicKey) Type() pb.KeyType {
@@ -110,60 +77,33 @@ func (pk *DilithiumPublicKey) Type() pb.KeyType {
 }
 
 func (pk *DilithiumPublicKey) Raw() ([]byte, error) {
-	return proto.Marshal(pk.pb)
+	return pk.pb.Bytes(), nil
 }
 
-func (pk *DilithiumPublicKey) Equals(k crypto.Key) bool {
-	return basicEquals(pk, k)
+func (pk *DilithiumPublicKey) Equals(k Key) bool {
+	return pk.pb.Equal(k.(*DilithiumPublicKey).pb)
 }
 
 func (pk *DilithiumPublicKey) Verify(data, sigBytes []byte) (bool, error) {
-	h := sha256.New()
-	h.Write(data)
-	hashedMessage := h.Sum(nil)
-
-	var pkSized [dilithium.PKSizePacked]uint8
-	copy(pkSized[:], pk.pb.Pk)
-
-	return reflect.DeepEqual(dilithium.Open(sigBytes, &pkSized), hashedMessage), nil
+	return mode2.Verify(pk.pb, data, sigBytes), nil
 }
 
-func basicEquals(k1, k2 crypto.Key) bool {
-	if k1.Type() != k2.Type() {
-		return false
-	}
-
-	a, err := k1.Raw()
-	if err != nil {
-		return false
-	}
-	b, err := k2.Raw()
-	if err != nil {
-		return false
-	}
-	return subtle.ConstantTimeCompare(a, b) == 1
-}
-
-func UnmarshalDilithiumPublicKey(b []byte) (crypto.PubKey, error) {
-	pbData := &protos.DilithiumPublicKey{}
-	err := proto.Unmarshal(b, pbData)
-	if err != nil {
-		return nil, err
-	}
+func UnmarshalDilithiumPublicKey(b []byte) (PubKey, error) {
+	PublicKey := &mode2.PublicKey{}
+	err := PublicKey.UnmarshalBinary(b)
 	d := &DilithiumPublicKey{
-		pb: pbData,
+		pb: PublicKey,
 	}
+
 	return d, err
 }
 
-func UnmarshalDilithiumPrivateKey(b []byte) (crypto.PrivKey, error) {
-	pbData := &protos.DilithiumKeys{}
-	err := proto.Unmarshal(b, pbData)
-	if err != nil {
-		return nil, err
-	}
+func UnmarshalDilithiumPrivateKey(b []byte) (PrivKey, error) {
+	PrivateKey := &mode2.PrivateKey{}
+	err := PrivateKey.UnmarshalBinary(b)
 	d := &DilithiumPrivateKey{
-		pb: pbData,
+		pb: PrivateKey,
+		pk: PrivateKey.Public().(*mode2.PublicKey),
 	}
 	return d, err
 }

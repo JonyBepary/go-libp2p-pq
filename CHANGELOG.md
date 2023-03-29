@@ -89,7 +89,7 @@ For now, we decided to stop sending this confusing error message. In the future,
 
 # [v0.25.1](https://github.com/JonyBepary/go-libp2p-pq/releases/tag/v0.25.1)
 
-Fix some test-utils used by https://github.com/JonyBepary/go-libp2p-pq-kad-dht
+Fix some test-utils used by https://github.com/libp2p/go-libp2p-kad-dht
 
 - mocknet: Start host in mocknet by @MarcoPolo in https://github.com/JonyBepary/go-libp2p-pq/pull/2078
 - chore: update go-multistream by @MarcoPolo in https://github.com/JonyBepary/go-libp2p-pq/pull/2081

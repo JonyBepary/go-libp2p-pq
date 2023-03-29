@@ -9,12 +9,12 @@ import (
 	"sync"
 
 	"github.com/JonyBepary/go-libp2p-pq"
-	dht "github.com/JonyBepary/go-libp2p-pq-kad-dht"
 	pubsub "github.com/JonyBepary/go-libp2p-pq-pubsub"
 	"github.com/JonyBepary/go-libp2p-pq/core/host"
 	"github.com/JonyBepary/go-libp2p-pq/core/peer"
 	drouting "github.com/JonyBepary/go-libp2p-pq/p2p/discovery/routing"
 	dutil "github.com/JonyBepary/go-libp2p-pq/p2p/discovery/util"
+	dht "github.com/libp2p/go-libp2p-kad-dht"
 )
 
 var (
