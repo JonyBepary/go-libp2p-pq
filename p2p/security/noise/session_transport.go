@@ -79,6 +79,18 @@ type SessionTransport struct {
 	// PQ KEM options
 	pqKEMEnabled bool
 	kemAlgorithm KEMAlgorithm
+	requirePQKEM bool
+}
+
+// WithRequiredPQKEM makes the handshake fail unless the peer also used the KEM
+// extension. It turns a silent classical downgrade into a connection error: an
+// active attacker can still block the extension, but it cannot make the node
+// believe it is protected when it is not.
+func WithRequiredPQKEM() SessionOption {
+	return func(s *SessionTransport) error {
+		s.requirePQKEM = true
+		return nil
+	}
 }
 
 // WithPQKEM returns a SessionOption that enables the hybrid KEM extension
@@ -95,7 +107,7 @@ func WithPQKEM(alg KEMAlgorithm) SessionOption {
 // If p is empty, connections from any peer are accepted.
 func (i *SessionTransport) SecureInbound(ctx context.Context, insecure net.Conn, p peer.ID) (sec.SecureConn, error) {
 	checkPeerID := !i.disablePeerIDCheck && p != ""
-	c, err := newSecureSession(i.t, ctx, insecure, p, i.prologue, i.initiatorEarlyDataHandler, i.responderEarlyDataHandler, false, checkPeerID, i.pqKEMEnabled, i.kemAlgorithm)
+	c, err := newSecureSession(i.t, ctx, insecure, p, i.prologue, i.initiatorEarlyDataHandler, i.responderEarlyDataHandler, false, checkPeerID, i.pqKEMEnabled, i.kemAlgorithm, i.requirePQKEM)
 	if err != nil {
 		addr, maErr := manet.FromNetAddr(insecure.RemoteAddr())
 		if maErr == nil {
@@ -107,7 +119,7 @@ func (i *SessionTransport) SecureInbound(ctx context.Context, insecure net.Conn,
 
 // SecureOutbound runs the Noise handshake as the initiator.
 func (i *SessionTransport) SecureOutbound(ctx context.Context, insecure net.Conn, p peer.ID) (sec.SecureConn, error) {
-	return newSecureSession(i.t, ctx, insecure, p, i.prologue, i.initiatorEarlyDataHandler, i.responderEarlyDataHandler, true, !i.disablePeerIDCheck, i.pqKEMEnabled, i.kemAlgorithm)
+	return newSecureSession(i.t, ctx, insecure, p, i.prologue, i.initiatorEarlyDataHandler, i.responderEarlyDataHandler, true, !i.disablePeerIDCheck, i.pqKEMEnabled, i.kemAlgorithm, i.requirePQKEM)
 }
 
 func (i *SessionTransport) ID() protocol.ID {

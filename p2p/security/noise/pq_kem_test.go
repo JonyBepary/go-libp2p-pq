@@ -266,3 +266,79 @@ func TestPQKEMNegotiationFlag(t *testing.T) {
 	require.False(t, classicalConn.PQKEMNegotiated(), "classical initiator must not report PQ")
 	require.False(t, pqResponder.PQKEMNegotiated(), "fallback must not report PQ")
 }
+
+// connectExpectingFailure runs one handshake and returns both errors. Used by
+// the downgrade tests, where the whole point is that the handshake must not
+// silently succeed.
+func connectExpectingFailure(t *testing.T, initOpts, respOpts []SessionOption) (error, error) {
+	t.Helper()
+	initTransport := newTestTransport(t, crypto.Ed25519, 2048)
+	respTransport := newTestTransport(t, crypto.Ed25519, 2048)
+
+	initST, err := initTransport.WithSessionOptions(initOpts...)
+	require.NoError(t, err)
+	respST, err := respTransport.WithSessionOptions(respOpts...)
+	require.NoError(t, err)
+
+	init, resp := newConnPair(t)
+
+	var initErr error
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		_, initErr = initST.SecureOutbound(context.Background(), init, respTransport.localID)
+	}()
+	_, respErr := respST.SecureInbound(context.Background(), resp, "")
+	<-done
+	return initErr, respErr
+}
+
+// A responder that requires PQ must refuse a classical initiator: there is no
+// ciphertext to return, so the connection fails instead of downgrading.
+func TestPQKEMRequiredResponderRejectsClassicalInitiator(t *testing.T) {
+	initErr, respErr := connectExpectingFailure(t,
+		nil,
+		[]SessionOption{WithPQKEM(KEMAlgorithmXWing), WithRequiredPQKEM()},
+	)
+	require.Error(t, respErr, "required PQ responder accepted a classical initiator")
+	t.Logf("responder error: %v (initiator err: %v)", respErr, initErr)
+}
+
+// The initiator-side guard that catches a stripped extension.
+func TestRequiredPQKEMFailsWhenNotNegotiated(t *testing.T) {
+	s := &secureSession{pqKEMEnabled: true, requirePQKEM: true}
+	require.Error(t, s.finishHandshake(), "required PQ passed without negotiation")
+
+	s.pqKEMNegotiated = true
+	require.NoError(t, s.finishHandshake())
+
+	optional := &secureSession{pqKEMEnabled: true}
+	require.NoError(t, optional.finishHandshake(), "optional PQ must allow a classical fallback")
+}
+
+// A responder that implements the extension answers any PQ offer, even when it
+// did not opt in itself. This is why the initiator's fail-closed check is the
+// meaningful one: capability is decided by the offer, not by configuration.
+func TestClassicalResponderAnswersPQOffer(t *testing.T) {
+	initConn, respConn := connectWithSessionOptions(t,
+		[]SessionOption{WithPQKEM(KEMAlgorithmXWing)},
+		nil,
+	)
+	defer initConn.Close()
+	defer respConn.Close()
+
+	require.True(t, initConn.PQKEMNegotiated())
+	require.True(t, respConn.PQKEMNegotiated())
+}
+
+func TestPQKEMRequiredAcceptsPQPeer(t *testing.T) {
+	initConn, respConn := connectWithSessionOptions(t,
+		[]SessionOption{WithPQKEM(KEMAlgorithmXWing), WithRequiredPQKEM()},
+		[]SessionOption{WithPQKEM(KEMAlgorithmXWing), WithRequiredPQKEM()},
+	)
+	defer initConn.Close()
+	defer respConn.Close()
+
+	require.True(t, initConn.PQKEMNegotiated())
+	require.True(t, respConn.PQKEMNegotiated())
+}

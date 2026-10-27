@@ -120,6 +120,12 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 
 		// If PQ KEM is enabled, decapsulate the ciphertext from stage 1 extensions.
 		var kemSharedSecret []byte
+		if kemPrivKey != nil && (rcvdEd == nil || len(rcvdEd.GetPqKemCiphertext()) == 0) && s.requirePQKEM {
+			// We advertised a KEM key and the peer returned no ciphertext. An
+			// active attacker can strip the extension, so this is where a silent
+			// classical downgrade would happen; fail instead.
+			return fmt.Errorf("pq kem required, but the peer returned no ciphertext (possible downgrade)")
+		}
 		if kemPrivKey != nil && rcvdEd != nil && len(rcvdEd.GetPqKemCiphertext()) > 0 {
 			kemScheme, _, err := kemSchemeForAlgorithm(s.kemAlgorithm)
 			if err != nil {
@@ -157,7 +163,7 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 				return fmt.Errorf("pq kem mix key failed: %w", err)
 			}
 		}
-		return nil
+		return s.finishHandshake()
 	} else {
 		// stage 0 //
 		stage0Plaintext, err := s.readHandshakeMessage(hs)
@@ -233,8 +239,17 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 				return fmt.Errorf("pq kem mix key failed: %w", err)
 			}
 		}
-		return nil
+		return s.finishHandshake()
 	}
+}
+
+// finishHandshake enforces the PQ requirement, if any. It runs on both sides
+// after the handshake messages have been exchanged.
+func (s *secureSession) finishHandshake() error {
+	if s.requirePQKEM && !s.pqKEMNegotiated {
+		return fmt.Errorf("pq kem required but not negotiated with peer")
+	}
+	return nil
 }
 
 // mixKEMSecret mixes the PQ KEM shared secret into the session cipher states
