@@ -54,6 +54,9 @@ const (
 	KeyType_SLHDSA_SHAKE_192f KeyType = 167772195 // 0x0A000023
 	KeyType_SLHDSA_SHAKE_256s KeyType = 167772196 // 0x0A000024
 	KeyType_SLHDSA_SHAKE_256f KeyType = 167772197 // 0x0A000025
+	// Hybrid classical + post-quantum signature schemes (composite keys and
+	// signatures; both components must verify).
+	KeyType_HYBRID_ED25519_MLDSA44 KeyType = 167772416 // 0x0A000100
 )
 
 // Enum value maps for KeyType.
@@ -79,28 +82,30 @@ var (
 		167772195: "SLHDSA_SHAKE_192f",
 		167772196: "SLHDSA_SHAKE_256s",
 		167772197: "SLHDSA_SHAKE_256f",
+		167772416: "HYBRID_ED25519_MLDSA44",
 	}
 	KeyType_value = map[string]int32{
-		"RSA":               0,
-		"Ed25519":           1,
-		"Secp256k1":         2,
-		"ECDSA":             3,
-		"ALGORITHM_EXT":     4,
-		"MLDSA44":           167772160,
-		"MLDSA65":           167772161,
-		"MLDSA87":           167772162,
-		"SLHDSA_SHA2_128s":  167772176,
-		"SLHDSA_SHA2_128f":  167772177,
-		"SLHDSA_SHA2_192s":  167772178,
-		"SLHDSA_SHA2_192f":  167772179,
-		"SLHDSA_SHA2_256s":  167772180,
-		"SLHDSA_SHA2_256f":  167772181,
-		"SLHDSA_SHAKE_128s": 167772192,
-		"SLHDSA_SHAKE_128f": 167772193,
-		"SLHDSA_SHAKE_192s": 167772194,
-		"SLHDSA_SHAKE_192f": 167772195,
-		"SLHDSA_SHAKE_256s": 167772196,
-		"SLHDSA_SHAKE_256f": 167772197,
+		"RSA":                    0,
+		"Ed25519":                1,
+		"Secp256k1":              2,
+		"ECDSA":                  3,
+		"ALGORITHM_EXT":          4,
+		"MLDSA44":                167772160,
+		"MLDSA65":                167772161,
+		"MLDSA87":                167772162,
+		"SLHDSA_SHA2_128s":       167772176,
+		"SLHDSA_SHA2_128f":       167772177,
+		"SLHDSA_SHA2_192s":       167772178,
+		"SLHDSA_SHA2_192f":       167772179,
+		"SLHDSA_SHA2_256s":       167772180,
+		"SLHDSA_SHA2_256f":       167772181,
+		"SLHDSA_SHAKE_128s":      167772192,
+		"SLHDSA_SHAKE_128f":      167772193,
+		"SLHDSA_SHAKE_192s":      167772194,
+		"SLHDSA_SHAKE_192f":      167772195,
+		"SLHDSA_SHAKE_256s":      167772196,
+		"SLHDSA_SHAKE_256f":      167772197,
+		"HYBRID_ED25519_MLDSA44": 167772416,
 	}
 )
 
@@ -281,7 +286,7 @@ const file_core_crypto_pb_crypto_proto_rawDesc = "" +
 	"PrivateKey\x12&\n" +
 	"\x04Type\x18\x01 \x02(\x0e2\x12.crypto.pb.KeyTypeR\x04Type\x12\x12\n" +
 	"\x04Data\x18\x02 \x02(\fR\x04Data\x12\x1c\n" +
-	"\tAlgorithm\x18\x03 \x01(\aR\tAlgorithm*\xae\x03\n" +
+	"\tAlgorithm\x18\x03 \x01(\aR\tAlgorithm*\xcd\x03\n" +
 	"\aKeyType\x12\a\n" +
 	"\x03RSA\x10\x00\x12\v\n" +
 	"\aEd25519\x10\x01\x12\r\n" +
@@ -302,7 +307,8 @@ const file_core_crypto_pb_crypto_proto_rawDesc = "" +
 	"\x11SLHDSA_SHAKE_192s\x10\xa2\x80\x80P\x12\x18\n" +
 	"\x11SLHDSA_SHAKE_192f\x10\xa3\x80\x80P\x12\x18\n" +
 	"\x11SLHDSA_SHAKE_256s\x10\xa4\x80\x80P\x12\x18\n" +
-	"\x11SLHDSA_SHAKE_256f\x10\xa5\x80\x80PB,Z*github.com/libp2p/go-libp2p/core/crypto/pb"
+	"\x11SLHDSA_SHAKE_256f\x10\xa5\x80\x80P\x12\x1d\n" +
+	"\x16HYBRID_ED25519_MLDSA44\x10\x80\x82\x80PB,Z*github.com/libp2p/go-libp2p/core/crypto/pb"
 
 var (
 	file_core_crypto_pb_crypto_proto_rawDescOnce sync.Once

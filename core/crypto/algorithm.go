@@ -31,6 +31,9 @@ const (
 	AlgorithmSLHDSASHAKE192f uint32 = 0x0A000023
 	AlgorithmSLHDSASHAKE256s uint32 = 0x0A000024
 	AlgorithmSLHDSASHAKE256f uint32 = 0x0A000025
+
+	// Hybrid classical + post-quantum composite schemes.
+	AlgorithmHybridEd25519MLDSA44 uint32 = 0x0A000100
 )
 
 var algorithmByKeyType = map[pb.KeyType]uint32{
@@ -51,6 +54,8 @@ var algorithmByKeyType = map[pb.KeyType]uint32{
 	pb.KeyType_SLHDSA_SHAKE_192f: AlgorithmSLHDSASHAKE192f,
 	pb.KeyType_SLHDSA_SHAKE_256s: AlgorithmSLHDSASHAKE256s,
 	pb.KeyType_SLHDSA_SHAKE_256f: AlgorithmSLHDSASHAKE256f,
+
+	pb.KeyType_HYBRID_ED25519_MLDSA44: AlgorithmHybridEd25519MLDSA44,
 }
 
 var keyTypeByAlgorithm = func() map[uint32]pb.KeyType {

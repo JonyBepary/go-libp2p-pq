@@ -52,6 +52,10 @@ const (
 	SLHDSA_SHAKE_192f = 0x0A000023 // 167772195
 	SLHDSA_SHAKE_256s = 0x0A000024 // 167772196
 	SLHDSA_SHAKE_256f = 0x0A000025 // 167772197
+
+	// HYBRID_ED25519_MLDSA44 is a composite classical + post-quantum scheme:
+	// both components must verify, compact mode signs with Ed25519 and ML-DSA-44.
+	HYBRID_ED25519_MLDSA44 = 0x0A000100 // 167772416
 )
 
 var (
@@ -78,6 +82,7 @@ var (
 		SLHDSA_SHAKE_192f,
 		SLHDSA_SHAKE_256s,
 		SLHDSA_SHAKE_256f,
+		HYBRID_ED25519_MLDSA44,
 	}
 )
 
@@ -186,6 +191,8 @@ func GenerateKeyPairWithReader(typ, bits int, src io.Reader) (PrivKey, PubKey, e
 		return GenerateSLHDSASHAKE256sKey(src)
 	case SLHDSA_SHAKE_256f:
 		return GenerateSLHDSASHAKE256fKey(src)
+	case HYBRID_ED25519_MLDSA44:
+		return GenerateHybridEd25519MLDSA44Key(src)
 	default:
 		return nil, nil, ErrBadKeyType
 	}

@@ -35,6 +35,9 @@ enum KeyType {
 	SLHDSA_SHAKE_192f = 167772195; // 0x0A000023
 	SLHDSA_SHAKE_256s = 167772196; // 0x0A000024
 	SLHDSA_SHAKE_256f = 167772197; // 0x0A000025
+	// Hybrid classical + post-quantum signature schemes (composite keys and
+	// signatures; both components must verify).
+	HYBRID_ED25519_MLDSA44 = 167772416; // 0x0A000100
 }
 
 message PublicKey {
