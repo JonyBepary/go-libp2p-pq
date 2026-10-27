@@ -6,6 +6,10 @@ option go_package = "github.com/libp2p/go-libp2p/p2p/security/noise/pb";
 message NoiseExtensions {
 	repeated bytes webtransport_certhashes = 1;
 	repeated string stream_muxers = 2;
+	// PQ KEM extension fields
+	optional bytes pq_kem_pubkey = 3;
+	optional bytes pq_kem_ciphertext = 4;
+	optional string pq_kem_algorithm = 5;
 }
 
 message NoiseHandshakePayload {

@@ -43,13 +43,18 @@ type secureSession struct {
 
 	initiatorEarlyDataHandler, responderEarlyDataHandler EarlyDataHandler
 
-	// ConnectionState holds state information releated to the secureSession entity.
+	// PQ KEM settings
+	pqKEMEnabled    bool
+	kemAlgorithm    KEMAlgorithm
+	pqKEMNegotiated bool
+
+	// ConnectionState holds state information related to the secureSession entity.
 	connectionState network.ConnectionState
 }
 
 // newSecureSession creates a Noise session over the given insecureConn Conn, using
 // the libp2p identity keypair from the given Transport.
-func newSecureSession(tpt *Transport, ctx context.Context, insecure net.Conn, remote peer.ID, prologue []byte, initiatorEDH, responderEDH EarlyDataHandler, initiator, checkPeerID bool) (*secureSession, error) {
+func newSecureSession(tpt *Transport, ctx context.Context, insecure net.Conn, remote peer.ID, prologue []byte, initiatorEDH, responderEDH EarlyDataHandler, initiator, checkPeerID bool, pqKEMEnabled bool, kemAlgorithm KEMAlgorithm) (*secureSession, error) {
 	s := &secureSession{
 		insecureConn:              insecure,
 		insecureReader:            bufio.NewReader(insecure),
@@ -61,6 +66,8 @@ func newSecureSession(tpt *Transport, ctx context.Context, insecure net.Conn, re
 		initiatorEarlyDataHandler: initiatorEDH,
 		responderEarlyDataHandler: responderEDH,
 		checkPeerID:               checkPeerID,
+		pqKEMEnabled:              pqKEMEnabled,
+		kemAlgorithm:              kemAlgorithm,
 	}
 
 	// the go-routine we create to run the handshake will

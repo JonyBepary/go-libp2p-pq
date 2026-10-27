@@ -93,7 +93,7 @@ func TestCryptoFailsIfHandshakeIncomplete(t *testing.T) {
 	init, resp := net.Pipe()
 	_ = resp.Close()
 
-	session, _ := newSecureSession(initTransport, context.TODO(), init, "remote-peer", nil, nil, nil, true, true)
+	session, _ := newSecureSession(initTransport, context.TODO(), init, "remote-peer", nil, nil, nil, true, true, false, 0)
 	_, err := session.encrypt(nil, []byte("hi"))
 	if err == nil {
 		t.Error("expected encryption error when handshake incomplete")

@@ -75,13 +75,27 @@ type SessionTransport struct {
 	protocolID protocol.ID
 
 	initiatorEarlyDataHandler, responderEarlyDataHandler EarlyDataHandler
+
+	// PQ KEM options
+	pqKEMEnabled bool
+	kemAlgorithm KEMAlgorithm
+}
+
+// WithPQKEM returns a SessionOption that enables the hybrid KEM extension
+// for the Noise handshake using the specified KEM algorithm.
+func WithPQKEM(alg KEMAlgorithm) SessionOption {
+	return func(s *SessionTransport) error {
+		s.pqKEMEnabled = true
+		s.kemAlgorithm = alg
+		return nil
+	}
 }
 
 // SecureInbound runs the Noise handshake as the responder.
 // If p is empty, connections from any peer are accepted.
 func (i *SessionTransport) SecureInbound(ctx context.Context, insecure net.Conn, p peer.ID) (sec.SecureConn, error) {
 	checkPeerID := !i.disablePeerIDCheck && p != ""
-	c, err := newSecureSession(i.t, ctx, insecure, p, i.prologue, i.initiatorEarlyDataHandler, i.responderEarlyDataHandler, false, checkPeerID)
+	c, err := newSecureSession(i.t, ctx, insecure, p, i.prologue, i.initiatorEarlyDataHandler, i.responderEarlyDataHandler, false, checkPeerID, i.pqKEMEnabled, i.kemAlgorithm)
 	if err != nil {
 		addr, maErr := manet.FromNetAddr(insecure.RemoteAddr())
 		if maErr == nil {
@@ -93,7 +107,7 @@ func (i *SessionTransport) SecureInbound(ctx context.Context, insecure net.Conn,
 
 // SecureOutbound runs the Noise handshake as the initiator.
 func (i *SessionTransport) SecureOutbound(ctx context.Context, insecure net.Conn, p peer.ID) (sec.SecureConn, error) {
-	return newSecureSession(i.t, ctx, insecure, p, i.prologue, i.initiatorEarlyDataHandler, i.responderEarlyDataHandler, true, !i.disablePeerIDCheck)
+	return newSecureSession(i.t, ctx, insecure, p, i.prologue, i.initiatorEarlyDataHandler, i.responderEarlyDataHandler, true, !i.disablePeerIDCheck, i.pqKEMEnabled, i.kemAlgorithm)
 }
 
 func (i *SessionTransport) ID() protocol.ID {

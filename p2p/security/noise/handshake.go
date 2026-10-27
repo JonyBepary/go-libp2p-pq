@@ -3,12 +3,15 @@ package noise
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"os"
 	"runtime/debug"
 	"time"
 
+	"github.com/cloudflare/circl/kem"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/sec"
@@ -16,6 +19,7 @@ import (
 
 	"github.com/flynn/noise"
 	pool "github.com/libp2p/go-buffer-pool"
+	"golang.org/x/crypto/hkdf"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -69,8 +73,38 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 
 	if s.initiator {
 		// stage 0 //
-		// Handshake Msg Len = len(DH ephemeral key)
-		if err := s.sendHandshakeMessage(hs, nil, hbuf); err != nil {
+		// If PQ KEM is enabled, generate an ephemeral KEM keypair and include
+		// the public key in the stage 0 payload (unencrypted in XX pattern).
+		var kemPrivKey kem.PrivateKey
+		var stage0Payload []byte
+		if s.pqKEMEnabled {
+			kemScheme, algName, err := kemSchemeForAlgorithm(s.kemAlgorithm)
+			if err != nil {
+				return err
+			}
+			kemPub, kemPriv, err := kemScheme.GenerateKeyPair()
+			if err != nil {
+				return fmt.Errorf("pq kem key generation failed: %w", err)
+			}
+			kemPrivKey = kemPriv
+			kemPubBytes, err := kemPub.MarshalBinary()
+			if err != nil {
+				return fmt.Errorf("pq kem public key marshal failed: %w", err)
+			}
+			algNameStr := algName
+			ext := &pb.NoiseExtensions{
+				PqKemPubkey:    kemPubBytes,
+				PqKemAlgorithm: &algNameStr,
+			}
+			stage0Payload, err = proto.Marshal(&pb.NoiseHandshakePayload{
+				Extensions: ext,
+			})
+			if err != nil {
+				return fmt.Errorf("error marshaling stage 0 KEM payload: %w", err)
+			}
+		}
+
+		if err := s.sendHandshakeMessage(hs, stage0Payload, hbuf); err != nil {
 			return fmt.Errorf("error sending handshake message: %w", err)
 		}
 
@@ -83,6 +117,20 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		if err != nil {
 			return err
 		}
+
+		// If PQ KEM is enabled, decapsulate the ciphertext from stage 1 extensions.
+		var kemSharedSecret []byte
+		if kemPrivKey != nil && rcvdEd != nil && len(rcvdEd.GetPqKemCiphertext()) > 0 {
+			kemScheme, _, err := kemSchemeForAlgorithm(s.kemAlgorithm)
+			if err != nil {
+				return err
+			}
+			kemSharedSecret, err = kemScheme.Decapsulate(kemPrivKey, rcvdEd.GetPqKemCiphertext())
+			if err != nil {
+				return fmt.Errorf("pq kem decapsulation failed: %w", err)
+			}
+		}
+
 		if s.initiatorEarlyDataHandler != nil {
 			if err := s.initiatorEarlyDataHandler.Received(ctx, s.insecureConn, rcvdEd); err != nil {
 				return err
@@ -102,11 +150,44 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		if err := s.sendHandshakeMessage(hs, payload, hbuf); err != nil {
 			return fmt.Errorf("error sending handshake message: %w", err)
 		}
+
+		// Mix the PQ KEM shared secret into the session cipher states.
+		if len(kemSharedSecret) > 0 {
+			if err := s.mixKEMSecret(kemSharedSecret); err != nil {
+				return fmt.Errorf("pq kem mix key failed: %w", err)
+			}
+		}
 		return nil
 	} else {
 		// stage 0 //
-		if _, err := s.readHandshakeMessage(hs); err != nil {
+		stage0Plaintext, err := s.readHandshakeMessage(hs)
+		if err != nil {
 			return fmt.Errorf("error reading handshake message: %w", err)
+		}
+
+		// Parse stage 0 payload for PQ KEM public key (if present).
+		var kemSharedSecret []byte
+		var kemCiphertext []byte
+		if len(stage0Plaintext) > 0 {
+			stage0Payload := new(pb.NoiseHandshakePayload)
+			if err := proto.Unmarshal(stage0Plaintext, stage0Payload); err == nil {
+				ext := stage0Payload.GetExtensions()
+				if ext != nil && len(ext.GetPqKemPubkey()) > 0 {
+					algName := ext.GetPqKemAlgorithm()
+					kemScheme, err := kemSchemeByName(algName)
+					if err == nil {
+						kemPub, err := kemScheme.UnmarshalBinaryPublicKey(ext.GetPqKemPubkey())
+						if err == nil {
+							ct, ss, err := kemScheme.Encapsulate(kemPub)
+							if err != nil {
+								return fmt.Errorf("pq kem encapsulation failed: %w", err)
+							}
+							kemSharedSecret = ss
+							kemCiphertext = ct
+						}
+					}
+				}
+			}
 		}
 
 		// stage 1 //
@@ -115,6 +196,13 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		var ed *pb.NoiseExtensions
 		if s.responderEarlyDataHandler != nil {
 			ed = s.responderEarlyDataHandler.Send(ctx, s.insecureConn, s.remoteID)
+		}
+		// Include KEM ciphertext in stage 1 extensions if we encapsulated.
+		if len(kemCiphertext) > 0 {
+			if ed == nil {
+				ed = &pb.NoiseExtensions{}
+			}
+			ed.PqKemCiphertext = kemCiphertext
 		}
 		payload, err := s.generateHandshakePayload(kp, ed)
 		if err != nil {
@@ -138,8 +226,80 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 				return err
 			}
 		}
+
+		// Mix the PQ KEM shared secret into the session cipher states.
+		if len(kemSharedSecret) > 0 {
+			if err := s.mixKEMSecret(kemSharedSecret); err != nil {
+				return fmt.Errorf("pq kem mix key failed: %w", err)
+			}
+		}
 		return nil
 	}
+}
+
+// mixKEMSecret mixes the PQ KEM shared secret into the session cipher states
+// using HKDF-SHA256. This folds the PQ secret into the session keys after
+// the standard Noise XX handshake completes.
+// PQKEMNegotiated reports whether this session actually used the PQ KEM
+// extension. It is false when the peer did not advertise or return KEM data,
+// which is exactly the silent classical fallback.
+func (s *secureSession) PQKEMNegotiated() bool { return s.pqKEMNegotiated }
+
+// PQKEMAlgorithmName returns the configured KEM algorithm name.
+func (s *secureSession) PQKEMAlgorithmName() string {
+	if !s.pqKEMEnabled {
+		return ""
+	}
+	_, name, err := kemSchemeForAlgorithm(s.kemAlgorithm)
+	if err != nil {
+		return ""
+	}
+	return name
+}
+
+func (s *secureSession) mixKEMSecret(kemSharedSecret []byte) error {
+	s.pqKEMNegotiated = true
+	// Derive new keys by mixing the KEM shared secret with the current cipher keys.
+	// We use HKDF-SHA256 with the KEM shared secret as the IKM and the current
+	// enc/dec keys as the salt to produce new enc/dec keys.
+	encKey := s.enc.UnsafeKey()
+	decKey := s.dec.UnsafeKey()
+
+	newEncKey, err := hkdfDeriveKey(encKey[:], kemSharedSecret)
+	if err != nil {
+		return err
+	}
+	newDecKey, err := hkdfDeriveKey(decKey[:], kemSharedSecret)
+	if err != nil {
+		return err
+	}
+
+	s.enc = noise.UnsafeNewCipherState(cipherSuite, newEncKey, 0)
+	s.dec = noise.UnsafeNewCipherState(cipherSuite, newDecKey, 0)
+	return nil
+}
+
+// hkdfDeriveKey derives a 32-byte key using HKDF-SHA256 with the given
+// input key material (ikm) and salt.
+func hkdfDeriveKey(salt, ikm []byte) ([32]byte, error) {
+	var out [32]byte
+	r := hkdf.New(sha256.New, ikm, salt, []byte("noise-libp2p-pq-kem"))
+	if _, err := io.ReadFull(r, out[:]); err != nil {
+		return out, err
+	}
+	return out, nil
+}
+
+// kemSchemeByName returns the CIRCL kem.Scheme for the given algorithm name string.
+// This is used by the responder to look up the scheme from the initiator's extension.
+func kemSchemeByName(name string) (kem.Scheme, error) {
+	for _, alg := range []KEMAlgorithm{KEMAlgorithmXWing, KEMAlgorithmMLKEM768X25519, KEMAlgorithmMLKEM512X25519, KEMAlgorithmMLKEM1024X448} {
+		scheme, algName, err := kemSchemeForAlgorithm(alg)
+		if err == nil && algName == name {
+			return scheme, nil
+		}
+	}
+	return nil, fmt.Errorf("unknown KEM algorithm name: %q", name)
 }
 
 // setCipherStates sets the initial cipher states that will be used to protect
@@ -228,7 +388,7 @@ func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *p
 	toSign := append([]byte(payloadSigPrefix), localStatic.Public...)
 	signedPayload, err := s.localKey.Sign(toSign)
 	if err != nil {
-		return nil, fmt.Errorf("error sigining handshake payload: %w", err)
+		return nil, fmt.Errorf("error signing handshake payload: %w", err)
 	}
 
 	// create payload

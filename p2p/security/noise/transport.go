@@ -2,9 +2,13 @@ package noise
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"slices"
 
+	"github.com/cloudflare/circl/kem"
+	"github.com/cloudflare/circl/kem/hybrid"
+	"github.com/cloudflare/circl/kem/xwing"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
@@ -15,6 +19,37 @@ import (
 
 	manet "github.com/multiformats/go-multiaddr/net"
 )
+
+// KEMAlgorithm identifies a KEM algorithm for the Noise PQ extension.
+type KEMAlgorithm int
+
+const (
+	// KEMAlgorithmXWing is the X-Wing hybrid KEM (X25519 + ML-KEM-768).
+	KEMAlgorithmXWing KEMAlgorithm = iota
+	// KEMAlgorithmMLKEM768X25519 is the ML-KEM-768 + X25519 hybrid KEM.
+	KEMAlgorithmMLKEM768X25519
+	// KEMAlgorithmMLKEM512X25519 is the ML-KEM-512 + X25519 hybrid KEM.
+	KEMAlgorithmMLKEM512X25519
+	// KEMAlgorithmMLKEM1024X448 is the ML-KEM-1024 + X448 hybrid KEM.
+	KEMAlgorithmMLKEM1024X448
+)
+
+// kemSchemeForAlgorithm returns the CIRCL kem.Scheme and algorithm name string
+// for the given KEMAlgorithm.
+func kemSchemeForAlgorithm(alg KEMAlgorithm) (kem.Scheme, string, error) {
+	switch alg {
+	case KEMAlgorithmXWing:
+		return xwing.Scheme(), "X-Wing", nil
+	case KEMAlgorithmMLKEM768X25519:
+		return hybrid.X25519MLKEM768(), "ML-KEM-768+X25519", nil
+	case KEMAlgorithmMLKEM512X25519:
+		return hybrid.Kyber512X25519(), "ML-KEM-512+X25519", nil
+	case KEMAlgorithmMLKEM1024X448:
+		return hybrid.Kyber1024X448(), "ML-KEM-1024+X448", nil
+	default:
+		return nil, "", fmt.Errorf("unknown KEM algorithm: %d", alg)
+	}
+}
 
 // ID is the protocol ID for noise
 const ID = "/noise"
@@ -54,7 +89,7 @@ func New(id protocol.ID, privkey crypto.PrivKey, muxers []tptu.StreamMuxer) (*Tr
 // If p is empty, connections from any peer are accepted.
 func (t *Transport) SecureInbound(ctx context.Context, insecure net.Conn, p peer.ID) (sec.SecureConn, error) {
 	responderEDH := newTransportEDH(t)
-	c, err := newSecureSession(t, ctx, insecure, p, nil, nil, responderEDH, false, p != "")
+	c, err := newSecureSession(t, ctx, insecure, p, nil, nil, responderEDH, false, p != "", false, 0)
 	if err != nil {
 		addr, maErr := manet.FromNetAddr(insecure.RemoteAddr())
 		if maErr == nil {
@@ -67,7 +102,7 @@ func (t *Transport) SecureInbound(ctx context.Context, insecure net.Conn, p peer
 // SecureOutbound runs the Noise handshake as the initiator.
 func (t *Transport) SecureOutbound(ctx context.Context, insecure net.Conn, p peer.ID) (sec.SecureConn, error) {
 	initiatorEDH := newTransportEDH(t)
-	c, err := newSecureSession(t, ctx, insecure, p, nil, initiatorEDH, nil, true, true)
+	c, err := newSecureSession(t, ctx, insecure, p, nil, initiatorEDH, nil, true, true, false, 0)
 	if err != nil {
 		return c, err
 	}

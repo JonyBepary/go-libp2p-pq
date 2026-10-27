@@ -26,6 +26,22 @@ const certValidityPeriod = 100 * 365 * 24 * time.Hour // ~100 years
 const certificatePrefix = "libp2p-tls-handshake:"
 const alpn string = "libp2p"
 
+// PQKEMGroup identifies a hybrid KEM group for TLS 1.3 key exchange.
+// Using WithPQKEMGroups prepends the selected group(s) to tls.Config.CurvePreferences,
+// causing the TLS stack to advertise and prefer those groups during the handshake.
+//
+// Approximate additional handshake byte overhead per group:
+//   - PQKEMGroupX25519MLKEM768:    ~2.3 KB (ML-KEM-768 pubkey 1184 B + ciphertext 1088 B)
+//   - PQKEMGroupSecP256r1MLKEM768: ~2.3 KB (ML-KEM-768 pubkey 1184 B + ciphertext 1088 B)
+type PQKEMGroup tls.CurveID
+
+const (
+	// PQKEMGroupX25519MLKEM768 is the X25519+ML-KEM-768 hybrid (Go 1.24 stdlib).
+	PQKEMGroupX25519MLKEM768 PQKEMGroup = PQKEMGroup(tls.X25519MLKEM768)
+	// PQKEMGroupSecP256r1MLKEM768 is the P-256+ML-KEM-768 hybrid (Go 1.24 stdlib).
+	PQKEMGroupSecP256r1MLKEM768 PQKEMGroup = PQKEMGroup(tls.SecP256r1MLKEM768)
+)
+
 var extensionID = getPrefixedExtensionID([]int{1, 1})
 var extensionCritical bool // so we can mark the extension critical in tests
 
@@ -43,6 +59,7 @@ type Identity struct {
 type IdentityConfig struct {
 	CertTemplate *x509.Certificate
 	KeyLogWriter io.Writer
+	PQKEMGroups  []PQKEMGroup
 }
 
 // IdentityOption transforms an IdentityConfig to apply optional settings.
@@ -67,11 +84,31 @@ func WithKeyLogWriter(w io.Writer) IdentityOption {
 	}
 }
 
+// WithPQKEMGroups returns an IdentityOption that prepends the given hybrid KEM
+// groups to the TLS CurvePreferences, enabling post-quantum key exchange.
+// Groups are tried in the order provided; classical groups remain as fallback.
+// Only PQKEMGroupX25519MLKEM768 and PQKEMGroupSecP256r1MLKEM768 are supported.
+func WithPQKEMGroups(groups ...PQKEMGroup) IdentityOption {
+	return func(c *IdentityConfig) {
+		c.PQKEMGroups = append(c.PQKEMGroups, groups...)
+	}
+}
+
 // NewIdentity creates a new identity
 func NewIdentity(privKey ic.PrivKey, opts ...IdentityOption) (*Identity, error) {
 	config := IdentityConfig{}
 	for _, opt := range opts {
 		opt(&config)
+	}
+
+	// Validate PQ KEM groups before doing any expensive work.
+	for _, group := range config.PQKEMGroups {
+		switch group {
+		case PQKEMGroupX25519MLKEM768, PQKEMGroupSecP256r1MLKEM768:
+			// valid
+		default:
+			return nil, fmt.Errorf("unsupported PQ KEM group: %d", group)
+		}
 	}
 
 	var err error
@@ -86,6 +123,13 @@ func NewIdentity(privKey ic.PrivKey, opts ...IdentityOption) (*Identity, error) 
 	if err != nil {
 		return nil, err
 	}
+
+	// Build CurvePreferences: prepend PQ groups before classical defaults.
+	var curvePrefs []tls.CurveID
+	for _, g := range config.PQKEMGroups {
+		curvePrefs = append(curvePrefs, tls.CurveID(g))
+	}
+
 	return &Identity{
 		config: tls.Config{
 			MinVersion:         tls.VersionTLS13,
@@ -98,6 +142,7 @@ func NewIdentity(privKey ic.PrivKey, opts ...IdentityOption) (*Identity, error) 
 			NextProtos:             []string{alpn},
 			SessionTicketsDisabled: true,
 			KeyLogWriter:           config.KeyLogWriter,
+			CurvePreferences:       curvePrefs,
 		},
 	}, nil
 }
@@ -153,7 +198,7 @@ func (i *Identity) ConfigForPeer(remote peer.ID) (*tls.Config, <-chan ic.PubKey)
 	return conf, keyCh
 }
 
-// PubKeyFromCertChain verifies the certificate chain and extract the remote's public key.
+// PubKeyFromCertChain verifies the certificate chain and extracts the remote's public key.
 func PubKeyFromCertChain(chain []*x509.Certificate) (ic.PubKey, error) {
 	if len(chain) != 1 {
 		return nil, errors.New("expected one certificates in the chain")
