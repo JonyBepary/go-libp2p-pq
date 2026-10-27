@@ -9,14 +9,49 @@ enum KeyType {
 	Ed25519 = 1;
 	Secp256k1 = 2;
 	ECDSA = 3;
+	// ALGORITHM_EXT means "the algorithm is named by the 4-byte Algorithm
+	// field, not by this enum". Writers that use the Algorithm field should
+	// either set Type to the matching algorithm-specific value below, or to
+	// this value when no such enum exists. Readers reject a message whose
+	// Type and Algorithm disagree.
+	ALGORITHM_EXT = 4;
+	// Post-quantum signing algorithms.
+	// Values start at 0x0A000000 to leave the low range free for future
+	// classical algorithm additions.
+	MLDSA44 = 167772160; // 0x0A000000
+	MLDSA65 = 167772161; // 0x0A000001
+	MLDSA87 = 167772162; // 0x0A000002
+	// SLH-DSA SHA-2 parameter sets
+	SLHDSA_SHA2_128s = 167772176; // 0x0A000010
+	SLHDSA_SHA2_128f = 167772177; // 0x0A000011
+	SLHDSA_SHA2_192s = 167772178; // 0x0A000012
+	SLHDSA_SHA2_192f = 167772179; // 0x0A000013
+	SLHDSA_SHA2_256s = 167772180; // 0x0A000014
+	SLHDSA_SHA2_256f = 167772181; // 0x0A000015
+	// SLH-DSA SHAKE parameter sets
+	SLHDSA_SHAKE_128s = 167772192; // 0x0A000020
+	SLHDSA_SHAKE_128f = 167772193; // 0x0A000021
+	SLHDSA_SHAKE_192s = 167772194; // 0x0A000022
+	SLHDSA_SHAKE_192f = 167772195; // 0x0A000023
+	SLHDSA_SHAKE_256s = 167772196; // 0x0A000024
+	SLHDSA_SHAKE_256f = 167772197; // 0x0A000025
 }
 
 message PublicKey {
+	// Legacy discriminator. Kept for compatibility with existing keys and
+	// readers; new algorithms must not rely on it because enum values are
+	// varints and are easy to collide with.
 	required KeyType Type = 1;
 	required bytes Data = 2;
+	// Algorithm is the authoritative 4-byte (fixed32) algorithm identifier.
+	// It is written on the wire as exactly 4 bytes, so identifiers can be
+	// allocated from a 32-bit registry without colliding with future enum
+	// additions. When present, readers MUST prefer it over Type.
+	optional fixed32 Algorithm = 3;
 }
 
 message PrivateKey {
 	required KeyType Type = 1;
 	required bytes Data = 2;
+	optional fixed32 Algorithm = 3;
 }
