@@ -77,6 +77,7 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		// the public key in the stage 0 payload (unencrypted in XX pattern).
 		var kemPrivKey kem.PrivateKey
 		var stage0Payload []byte
+		var stage0Digest [32]byte // digest of the extensions we send in stage 0
 		if s.pqKEMEnabled {
 			kemScheme, algName, err := kemSchemeForAlgorithm(s.kemAlgorithm)
 			if err != nil {
@@ -96,6 +97,7 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 				PqKemPubkey:    kemPubBytes,
 				PqKemAlgorithm: &algNameStr,
 			}
+			stage0Digest = extensionsDigest(ext)
 			stage0Payload, err = proto.Marshal(&pb.NoiseHandshakePayload{
 				Extensions: ext,
 			})
@@ -113,7 +115,7 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		if err != nil {
 			return fmt.Errorf("error reading handshake message: %w", err)
 		}
-		rcvdEd, err := s.handleRemoteHandshakePayload(plaintext, hs.PeerStatic())
+		rcvdEd, err := s.handleRemoteHandshakePayload(plaintext, hs.PeerStatic(), stage0Digest)
 		if err != nil {
 			return err
 		}
@@ -149,7 +151,7 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		if s.initiatorEarlyDataHandler != nil {
 			ed = s.initiatorEarlyDataHandler.Send(ctx, s.insecureConn, s.remoteID)
 		}
-		payload, err := s.generateHandshakePayload(kp, ed)
+		payload, err := s.generateHandshakePayload(kp, ed, stage0Digest)
 		if err != nil {
 			return err
 		}
@@ -174,10 +176,12 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		// Parse stage 0 payload for PQ KEM public key (if present).
 		var kemSharedSecret []byte
 		var kemCiphertext []byte
+		var stage0Digest [32]byte // digest of the extensions the initiator sent
 		if len(stage0Plaintext) > 0 {
 			stage0Payload := new(pb.NoiseHandshakePayload)
 			if err := proto.Unmarshal(stage0Plaintext, stage0Payload); err == nil {
 				ext := stage0Payload.GetExtensions()
+				stage0Digest = extensionsDigest(ext)
 				if ext != nil && len(ext.GetPqKemPubkey()) > 0 {
 					algName := ext.GetPqKemAlgorithm()
 					kemScheme, err := kemSchemeByName(algName)
@@ -210,7 +214,7 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 			}
 			ed.PqKemCiphertext = kemCiphertext
 		}
-		payload, err := s.generateHandshakePayload(kp, ed)
+		payload, err := s.generateHandshakePayload(kp, ed, stage0Digest)
 		if err != nil {
 			return err
 		}
@@ -223,7 +227,7 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		if err != nil {
 			return fmt.Errorf("error reading handshake message: %w", err)
 		}
-		rcvdEd, err := s.handleRemoteHandshakePayload(plaintext, hs.PeerStatic())
+		rcvdEd, err := s.handleRemoteHandshakePayload(plaintext, hs.PeerStatic(), stage0Digest)
 		if err != nil {
 			return err
 		}
@@ -389,9 +393,43 @@ func (s *secureSession) readHandshakeMessage(hs *noise.HandshakeState) ([]byte, 
 	return msg, nil
 }
 
+// extensionsDigest is a canonical, deterministic digest of the handshake
+// extensions. It is mixed into the identity signature so an on-path attacker
+// cannot strip or replace the PQ KEM material without breaking the signature.
+// The encoding is length-prefixed and field-ordered, independent of protobuf
+// serialization details.
+func extensionsDigest(ext *pb.NoiseExtensions) [32]byte {
+	h := sha256.New()
+	write := func(b []byte) {
+		var l [4]byte
+		binary.BigEndian.PutUint32(l[:], uint32(len(b)))
+		_, _ = h.Write(l[:])
+		_, _ = h.Write(b)
+	}
+	// A nil extension and an empty extension message must hash identically,
+	// otherwise a peer that sends an empty message instead of omitting it would
+	// fail the binding check.
+	if ext == nil {
+		ext = &pb.NoiseExtensions{}
+	}
+	write([]byte(ext.GetPqKemAlgorithm()))
+	write(ext.GetPqKemPubkey())
+	write(ext.GetPqKemCiphertext())
+	for _, muxer := range ext.GetStreamMuxers() {
+		write([]byte(muxer))
+	}
+	for _, hash := range ext.GetWebtransportCerthashes() {
+		write(hash)
+	}
+	var out [32]byte
+	copy(out[:], h.Sum(nil))
+	return out
+}
+
 // generateHandshakePayload creates a libp2p handshake payload with a
-// signature of our static noise key.
-func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *pb.NoiseExtensions) ([]byte, error) {
+// signature of our static noise key, the digest of the peer's stage-0
+// extensions, and the digest of the extensions we are sending.
+func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *pb.NoiseExtensions, stage0Digest [32]byte) ([]byte, error) {
 	// obtain the public key from the handshake session, so we can sign it with
 	// our libp2p secret key.
 	localKeyRaw, err := crypto.MarshalPublicKey(s.LocalPublicKey())
@@ -399,8 +437,15 @@ func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *p
 		return nil, fmt.Errorf("error serializing libp2p identity key: %w", err)
 	}
 
-	// prepare payload to sign; perform signature.
-	toSign := append([]byte(payloadSigPrefix), localStatic.Public...)
+	// prepare payload to sign; perform signature. The preimage binds the static
+	// Noise key, the extensions this peer sent in stage 0 (if any) and the
+	// extensions carried in this payload, so KEM material is authenticated.
+	ownDigest := extensionsDigest(ext)
+	toSign := make([]byte, 0, len(payloadSigPrefix)+len(localStatic.Public)+64)
+	toSign = append(toSign, payloadSigPrefix...)
+	toSign = append(toSign, localStatic.Public...)
+	toSign = append(toSign, stage0Digest[:]...)
+	toSign = append(toSign, ownDigest[:]...)
 	signedPayload, err := s.localKey.Sign(toSign)
 	if err != nil {
 		return nil, fmt.Errorf("error signing handshake payload: %w", err)
@@ -421,7 +466,7 @@ func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *p
 // handleRemoteHandshakePayload unmarshals the handshake payload object sent
 // by the remote peer and validates the signature against the peer's static Noise key.
 // It returns the data attached to the payload.
-func (s *secureSession) handleRemoteHandshakePayload(payload []byte, remoteStatic []byte) (*pb.NoiseExtensions, error) {
+func (s *secureSession) handleRemoteHandshakePayload(payload []byte, remoteStatic []byte, stage0Digest [32]byte) (*pb.NoiseExtensions, error) {
 	// unmarshal payload
 	nhp := new(pb.NoiseHandshakePayload)
 	err := proto.Unmarshal(payload, nhp)
@@ -446,7 +491,12 @@ func (s *secureSession) handleRemoteHandshakePayload(payload []byte, remoteStati
 
 	// verify payload is signed by asserted remote libp2p key.
 	sig := nhp.GetIdentitySig()
-	msg := append([]byte(payloadSigPrefix), remoteStatic...)
+	remoteExtDigest := extensionsDigest(nhp.GetExtensions())
+	msg := make([]byte, 0, len(payloadSigPrefix)+len(remoteStatic)+64)
+	msg = append(msg, payloadSigPrefix...)
+	msg = append(msg, remoteStatic...)
+	msg = append(msg, stage0Digest[:]...)
+	msg = append(msg, remoteExtDigest[:]...)
 	ok, err := remotePubKey.Verify(msg, sig)
 	if err != nil {
 		return nil, fmt.Errorf("error verifying signature: %w", err)
